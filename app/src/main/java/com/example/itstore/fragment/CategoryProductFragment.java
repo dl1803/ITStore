@@ -17,8 +17,11 @@ import com.example.itstore.adapter.ProductAdapter;
 import com.example.itstore.api.RetrofitClient;
 import com.example.itstore.databinding.FragmentCategoryProductBinding;
 import com.example.itstore.dialog.FilterProductDialog;
+import com.example.itstore.model.Brand;
+import com.example.itstore.model.BrandResponse;
 import com.example.itstore.model.Product;
 import com.example.itstore.model.ProductResponse;
+import com.example.itstore.repository.ProductRepository;
 import com.example.itstore.viewmodel.HomeViewModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +32,13 @@ import retrofit2.Response;
 
 public class CategoryProductFragment extends Fragment {
     private FragmentCategoryProductBinding binding;
-    private HomeViewModel homeViewModel;
     private ProductAdapter productAdapter;
-    private String selectedCategoryId = "all";
+    private ProductRepository productRepository;
+    private int currentCategoryId = -1;
+    private double currentMinPrice = 0;
+    private double currentMaxPrice = Double.MAX_VALUE;
+    private List<Integer> currentBrandIds = new ArrayList<>();
+    private List<Brand> fetchedBrands = new ArrayList<>();
     private String currentSort = "";
     @Nullable
     @Override
@@ -43,16 +50,19 @@ public class CategoryProductFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+        productRepository = ProductRepository.getInstance(requireContext());
         if (getArguments() != null) {
-            selectedCategoryId = getArguments().getString("CATEGORY_ID", "all");
+            String catIdStr = getArguments().getString("CATEGORY_ID", "-1");
+            currentCategoryId = Integer.parseInt(catIdStr);
             String categoryName = getArguments().getString("CATEGORY_NAME", "Danh mục");
             binding.tvCategoryTitle.setText(categoryName);
         }
         productAdapter = new ProductAdapter(requireContext(), new ArrayList<>());
         binding.rvCategoryProduct.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         binding.rvCategoryProduct.setAdapter(productAdapter);
-        applyFilters(0, Double.MAX_VALUE);
+
+        fetchBrandsForFilter();
+        loadProductsByCategory();
         binding.btnFilter.setOnClickListener(v -> {
             openFilterDialog();
         });
@@ -62,9 +72,21 @@ public class CategoryProductFragment extends Fragment {
         binding.tvSort.setOnClickListener(v -> {
             showSortMenu();
         });
-        loadProductsByCategory();
     }
-
+    private void fetchBrandsForFilter() {
+        productRepository.getBrands(new Callback<BrandResponse>() {
+            @Override
+            public void onResponse(Call<BrandResponse> call, Response<BrandResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    fetchedBrands = response.body().getData();
+                }
+            }
+            @Override
+            public void onFailure(Call<BrandResponse> call, Throwable t) {
+                Log.e("LỖI_API_BRAND", "Không lấy được danh sách hãng ở màn Category: " + t.getMessage());
+            }
+        });
+    }
     private void showSortMenu() {
         PopupMenu popupMenu = new PopupMenu(requireContext(), binding.tvSort);
 
@@ -89,55 +111,46 @@ public class CategoryProductFragment extends Fragment {
                     break;
             }
             loadProductsByCategory();
-
             return true;
         });
 
         popupMenu.show();
     }
     private void loadProductsByCategory() {
-        int categoryId = getArguments() != null ? Integer.parseInt(getArguments().getString("CATEGORY_ID", "-1")) : -1;
+        Integer apiCategoryId = (currentCategoryId == -1) ? null : currentCategoryId;
+        Double apiMinPrice = (currentMinPrice <= 0) ? null : currentMinPrice;
+        Double apiMaxPrice = (currentMaxPrice == Double.MAX_VALUE) ? null : currentMaxPrice;
+        Integer apiBrandId = (currentBrandIds != null && !currentBrandIds.isEmpty()) ? currentBrandIds.get(0) : null;
+        String apiSort = currentSort.isEmpty() ? null : currentSort;
 
-        RetrofitClient.getApiService(requireContext()).getProducts(
-                1, 20, null, categoryId, null, null, null,
-                currentSort.isEmpty() ? null : currentSort).enqueue(new Callback<ProductResponse>() {
-            @Override
-            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    productAdapter.updateList(response.body().getData());
-                    binding.tvItemCount.setText("Tìm thấy " + response.body().getPagination().getTotal() + " sản phẩm");
-                }
-            }
+        productRepository.getProducts(
+                1, 20, null, apiCategoryId, apiBrandId, apiMinPrice, apiMaxPrice, apiSort,
+                new Callback<ProductResponse>() {
+                    @Override
+                    public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+                        if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                            productAdapter.updateList(response.body().getData());
+                            binding.tvItemCount.setText("Tìm thấy " + response.body().getPagination().getTotal() + " sản phẩm");
+                        }
+                    }
 
-            @Override
-            public void onFailure(Call<ProductResponse> call, Throwable t) {
-                Log.e("LỖI_API", "Không tải được sản phẩm danh mục: " + t.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(Call<ProductResponse> call, Throwable t) {
+                        Log.e("LỖI_API", "Không tải được sản phẩm danh mục: " + t.getMessage());
+                    }
+                });
     }
     private void openFilterDialog() {
         FilterProductDialog dialog = new FilterProductDialog();
-        dialog.setOnFilterAppliedListener((min, max, brand) -> {
-            applyFilters(min, max);
+        dialog.setBrandList(fetchedBrands);
+
+        dialog.setOnFilterAppliedListener((min, max, brandIds) -> {
+            this.currentMinPrice = min;
+            this.currentMaxPrice = max;
+            this.currentBrandIds = brandIds;
+            loadProductsByCategory();
         });
         dialog.show(getChildFragmentManager(), "FilterProductDialog");
-    }
-    private void applyFilters(double minPrice, double maxPrice) {
-        homeViewModel.getProductListLiveData().observe(getViewLifecycleOwner(), products -> {
-            if (products == null) return;
-            List<Product> filteredList = new ArrayList<>();
-            for (Product p : products) {
-                String productIdStr = String.valueOf(p.getCategoryId());
-                boolean matchCategory = selectedCategoryId.equals("all") || productIdStr.equals(selectedCategoryId);
-                double currentPrice = p.getPrice();
-                boolean matchPrice = currentPrice >= minPrice && currentPrice <= maxPrice;
-                if (matchCategory && matchPrice) {
-                    filteredList.add(p);
-                }
-            }
-            productAdapter.updateList(filteredList);
-            binding.tvItemCount.setText("Tìm thấy " + filteredList.size() + " sản phẩm");
-        });
     }
     @Override
     public void onDestroyView() {
