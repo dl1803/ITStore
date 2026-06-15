@@ -81,6 +81,7 @@
     </androidx.viewpager2.widget.ViewPager2>
 
     <TextView
+        android:id="@+id/tvImageIndicator"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:text="1/5"

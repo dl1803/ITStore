@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.itstore.R;
 import com.example.itstore.adapter.ReviewAdapter;
@@ -230,6 +231,16 @@ public class ProductDetailActivity extends AppCompatActivity {
         ImagePagerAdapter imageAdapter = new ImagePagerAdapter(listImagesUrls);
         binding.imgProductDetail.setAdapter(imageAdapter);
 
+        int totalImages = listImagesUrls.isEmpty() ? 1 : listImagesUrls.size();
+        binding.tvImageIndicator.setText("1/" + totalImages);
+
+        binding.imgProductDetail.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                binding.tvImageIndicator.setText((position + 1) + "/" + totalImages);
+            }
+        });
         List<ProductVariant> variants = fullProductData.getVariants();
         if (variants != null && !variants.isEmpty()) {
             // Mặc định chọn bản đầu tiên
