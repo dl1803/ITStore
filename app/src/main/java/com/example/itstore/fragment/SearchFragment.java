@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -48,6 +49,9 @@ public class SearchFragment extends Fragment {
     private double currentMaxPrice = Double.MAX_VALUE;
     private List<Integer> currentBrandIds = new ArrayList<>();
     private List<Brand> fetchedBrands = new ArrayList<>();
+    private int currentPage = 1;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -119,7 +123,13 @@ public class SearchFragment extends Fragment {
         binding.rvSearchRecommend.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         binding.rvSearchRecommend.setAdapter(productAdapter);
 
+        viewModel.getHasMore().observe(getViewLifecycleOwner(), hasMore -> {
+            if (hasMore != null) {
+                isLastPage = !hasMore;
+            }
+        });
         viewModel.searchResults.observe(getViewLifecycleOwner(), products -> {
+            isLoading = false;
             if (products != null) {
                 productAdapter.updateList(products);
                 String query = binding.edtSearch.getText().toString().trim();
@@ -132,6 +142,30 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        binding.rvSearchRecommend.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                // Chỉ tính toán khi người dùng đang vuốt cuộn xuống dưới
+                if (dy > 0) {
+                    GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+                    if (layoutManager != null) {
+                        int visibleItemCount = layoutManager.getChildCount();
+                        int totalItemCount = layoutManager.getItemCount();
+                        int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                        if (!isLoading && !isLastPage) {
+                            if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                                    && firstVisibleItemPosition >= 0
+                                    && totalItemCount >= 2) {
+                                loadMoreSearchResults();
+                            }
+                        }
+                    }
+                }
+            }
+        });
         // Lay data cua chip tu api
         HomeViewModel homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         homeViewModel.getCategoryListLiveData().observe(getViewLifecycleOwner(), categories -> {
@@ -220,6 +254,10 @@ public class SearchFragment extends Fragment {
     }
     // Hàm lọc
     private void performCombinedSearch() {
+        currentPage = 1;
+        isLastPage = false;
+        isLoading = true;
+
         String query = binding.edtSearch.getText().toString().trim();
         if (!query.isEmpty() || currentCategoryId != -1 || currentMinPrice > 0 || !currentBrandIds.isEmpty()) {
             binding.tvResultRecommend.setText("Kết quả lọc");
@@ -228,7 +266,13 @@ public class SearchFragment extends Fragment {
             binding.tvResultRecommend.setText("Gợi ý tìm kiếm");
             binding.btnOpenFilter.setVisibility(View.GONE);
         }
-        viewModel.searchProducts(query, currentCategoryId, currentMinPrice, currentMaxPrice, currentBrandIds);
+        viewModel.searchProducts(query, currentCategoryId, currentMinPrice, currentMaxPrice, currentBrandIds, currentPage, false);
+    }
+    private void loadMoreSearchResults() {
+        isLoading = true;
+        currentPage++;
+        String query = binding.edtSearch.getText().toString().trim();
+        viewModel.searchProducts(query, currentCategoryId, currentMinPrice, currentMaxPrice, currentBrandIds, currentPage, true);
     }
     private void hideKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);

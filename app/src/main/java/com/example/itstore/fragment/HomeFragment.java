@@ -15,8 +15,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -62,6 +64,9 @@ public class HomeFragment extends Fragment {
 
     private LinearLayout layoutIndicators;
     private View rootView;
+    private int currentPage = 1;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
     private final ActivityResultLauncher<Intent> detailLauncher = registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
@@ -216,12 +221,42 @@ public class HomeFragment extends Fragment {
                 }
             });
         rcvProducts.setAdapter(productAdapter);
-        homeViewModel.getProductListLiveData().observe(getViewLifecycleOwner(), products -> {
-            if (products != null) {
-                productAdapter.updateList(products);
+        homeViewModel.getHasMoreLiveData().observe(getViewLifecycleOwner(), hasMore -> {
+            if (hasMore != null) {
+                isLastPage = !hasMore;
             }
         });
-
+        homeViewModel.getProductListLiveData().observe(getViewLifecycleOwner(), products -> {
+            isLoading = false;
+            if (products != null) {
+                productAdapter.updateList(products);
+                if (!isLastPage) {
+                    binding.nestedScrollView.post(() -> {
+                        View child = binding.nestedScrollView.getChildAt(0);
+                        if (child != null) {
+                            int diff = child.getBottom() - (binding.nestedScrollView.getHeight() + binding.nestedScrollView.getScrollY());
+                            if (diff <= 200) {
+                                loadMoreHomeProducts();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        binding.nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY > oldScrollY) {
+                    View child = v.getChildAt(0);
+                    if (child != null) {
+                        int diff = child.getBottom() - (v.getHeight() + scrollY);
+                        if (diff <= 200 && !isLoading && !isLastPage) {
+                            loadMoreHomeProducts();
+                        }
+                    }
+                }
+            }
+        });
         wishlistViewModel.getWishlistProductIds().observe(getViewLifecycleOwner(), productIds -> {
             List<Product> products = homeViewModel.getProductListLiveData().getValue();
             if (products != null) {
@@ -256,17 +291,24 @@ public class HomeFragment extends Fragment {
         });
 
         binding.tvSeeAll.setOnClickListener(v -> {
-            androidx.navigation.Navigation.findNavController(v).navigate(R.id.nav_search);
+            Navigation.findNavController(v).navigate(R.id.nav_search);
         });
         binding.layoutSearchBar.setOnClickListener(v -> {
-            androidx.navigation.Navigation.findNavController(v).navigate(R.id.nav_search);
+            Navigation.findNavController(v).navigate(R.id.nav_search);
         });
         // goi ham lay san pham tu api
         homeViewModel.fetchBanners();
         homeViewModel.fetchCategories();
-        homeViewModel.fetchSuggestedProducts();
+        currentPage = 1;
+        isLastPage = false;
+        isLoading = true;
+        homeViewModel.fetchSuggestedProducts(currentPage, false);
         return view;
-
+    }
+    private void loadMoreHomeProducts() {
+        isLoading = true;
+        currentPage++;
+        homeViewModel.fetchSuggestedProducts(currentPage, true);
     }
     @Override
     public void onResume() {
