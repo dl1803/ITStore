@@ -44,7 +44,13 @@ public class CartViewModel extends AndroidViewModel {
         super(application);
         this.repository = CartRepository.getInstance(application);
     }
-
+    public void loadCartIfNeeded() {
+        if (!CartManager.getInstance().isCartNeedRefresh()) {
+            return; // dữ liệu vẫn còn mới, không cần gọi API
+        }
+        CartManager.getInstance().clearCartNeedRefresh();
+        fetchCart();
+    }
     public LiveData<Boolean> getIsAllSelectedLiveData() { return isAllSelectedLiveData; }
     public LiveData<List<CartItem>> getCartItems() { return cartItemsLiveData; }
     public LiveData<Double> getTotalPrice() { return totalPriceLiveData; }

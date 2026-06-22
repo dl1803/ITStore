@@ -38,7 +38,19 @@ public class HomeViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Product>> productListLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Banner>> bannerListLiveData = new MutableLiveData<>();
     private List<Product> allProducts = new ArrayList<>();
-    private final MutableLiveData<Boolean> hasMoreLiveData = new MutableLiveData<>(true);
+    private boolean isDataLoaded = false;
+
+    public void loadInitialDataIfNeeded() {
+        if (isDataLoaded) return;
+        isDataLoaded = true;
+        fetchBanners();
+        fetchCategories();
+        fetchSuggestedProducts();
+    }
+    public void forceReloadProducts() {
+        isDataLoaded = false;
+        loadInitialDataIfNeeded();
+    }
     public HomeViewModel(@NonNull Application application) {
         super(application);
         this.repository = ProductRepository.getInstance(application);

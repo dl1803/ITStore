@@ -10,7 +10,11 @@ import retrofit2.Callback;
 public class WishlistRepository {
     private static WishlistRepository instance;
     private final RetrofitClient.ApiService apiService;
+    private static boolean needRefresh = true;
 
+    public static void markNeedRefresh() { needRefresh = true; }
+    public static boolean isNeedRefresh() { return needRefresh; }
+    public static void clearNeedRefresh() { needRefresh = false; }
     private WishlistRepository(Context context) {
         this.apiService = RetrofitClient.getApiService(context);
     }

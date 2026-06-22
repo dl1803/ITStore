@@ -26,7 +26,10 @@ public class WishlistViewModel extends AndroidViewModel {
         super(application);
         this.repository = WishlistRepository.getInstance(application);
     }
-
+    public void loadWishlistIfNeeded() {
+        if (!WishlistRepository.isNeedRefresh()) return;
+        fetchWishlist();
+    }
     public LiveData<List<WishlistItem>> getWishlistItems() { return wishlistItems; }
     public LiveData<Set<Integer>> getWishlistProductIds() { return wishlistProductIds; }
     public LiveData<String> getToastMessage() { return toastMessage; }
@@ -45,6 +48,7 @@ public class WishlistViewModel extends AndroidViewModel {
                         }
                     }
                     wishlistProductIds.setValue(ids);
+                    WishlistRepository.clearNeedRefresh();
                 }
             }
 
@@ -65,6 +69,7 @@ public class WishlistViewModel extends AndroidViewModel {
                     currentIds.add(productId);
                     wishlistProductIds.setValue(currentIds);
                     toastMessage.setValue("Đã thêm vào yêu thích");
+                    WishlistRepository.markNeedRefresh();
                 } else {
                     toastMessage.setValue("Không thể thêm vào yêu thích");
                 }
@@ -86,6 +91,7 @@ public class WishlistViewModel extends AndroidViewModel {
                     if (currentIds != null) {
                         currentIds.remove(productId);
                         wishlistProductIds.setValue(currentIds);
+                        WishlistRepository.markNeedRefresh();
                     }
                     List<WishlistItem> currentItems = wishlistItems.getValue();
                     if (currentItems != null) {
