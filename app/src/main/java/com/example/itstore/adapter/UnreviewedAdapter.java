@@ -6,12 +6,15 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.itstore.R;
 import com.example.itstore.activity.WriteReviewActivity;
 import com.example.itstore.databinding.ItemUnreviewedProductBinding;
 import com.example.itstore.model.UnreviewedResponse.UnreviewedItem;
+import com.example.itstore.utils.CustomGlideUrl;
+
 import java.util.List;
 
 public class UnreviewedAdapter extends RecyclerView.Adapter<UnreviewedAdapter.ViewHolder> {
@@ -41,7 +44,7 @@ public class UnreviewedAdapter extends RecyclerView.Adapter<UnreviewedAdapter.Vi
         holder.binding.tvProductName.setText(item.getProductName());
         holder.binding.tvProductVariant.setText("Phân loại: " + (item.getVersion() != null ? item.getVersion() : "Tiêu chuẩn"));
         Glide.with(context).
-                load(item.getProductImage()).
+                load(new CustomGlideUrl(item.getProductImage())).
                 placeholder(R.drawable.ic_search).
                 into(holder.binding.imgProduct);
 
@@ -65,5 +68,39 @@ public class UnreviewedAdapter extends RecyclerView.Adapter<UnreviewedAdapter.Vi
             super(binding.getRoot());
             this.binding = binding;
         }
+    }
+
+    public void updateData(List<UnreviewedItem> newItemList) {
+        if (this.itemList == null || this.itemList.isEmpty()) {
+            this.itemList.clear();
+            this.itemList.addAll(newItemList);
+            notifyDataSetChanged();
+            return;
+        }
+
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override public int getOldListSize() { return itemList.size(); }
+            @Override public int getNewListSize() { return newItemList.size(); }
+
+            @Override
+            public boolean areItemsTheSame(int oldPos, int newPos) {
+                return itemList.get(oldPos).getOrderItemId() == newItemList.get(newPos).getOrderItemId();
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldPos, int newPos) {
+                UnreviewedItem oldItem = itemList.get(oldPos);
+                UnreviewedItem newItem = newItemList.get(newPos);
+
+                String oldImg = oldItem.getProductImage() != null ? oldItem.getProductImage().split("\\?")[0] : "";
+                String newImg = newItem.getProductImage() != null ? newItem.getProductImage().split("\\?")[0] : "";
+
+                return oldItem.getRemainingDays() == newItem.getRemainingDays() && oldImg.equals(newImg);
+            }
+        });
+
+        this.itemList.clear();
+        this.itemList.addAll(newItemList);
+        diffResult.dispatchUpdatesTo(this);
     }
 }
