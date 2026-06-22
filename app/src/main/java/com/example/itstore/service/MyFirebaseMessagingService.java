@@ -25,44 +25,70 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+        String title = "IT Store";
+        String body = "Bạn có thông báo mới!";
+        String notiType = "system";
+
+
+        if (remoteMessage.getNotification() != null) {
+            if (remoteMessage.getNotification().getTitle() != null)
+                title = remoteMessage.getNotification().getTitle();
+            if (remoteMessage.getNotification().getBody() != null)
+                body = remoteMessage.getNotification().getBody();
+        }
 
         if (remoteMessage.getData().size() > 0) {
             Map<String, String> data = remoteMessage.getData();
-            String title = data.get("title");
-            String body = data.get("body");
-            String notiType = data.get("type");
-            String token = SharedPrefsManager.getInstance(getApplicationContext()).getAccessToken();
-            if (token == null || token.isEmpty()) {
-                Log.d("FCM_SERVICE", "User đã đăng xuất, từ chối hiển thị thông báo cũ!");
-                return;
-            }
-
-            SharedPreferences prefs = getSharedPreferences("NotificationPrefs", Context.MODE_PRIVATE);
-
-            if (notiType != null) {
-                switch (notiType.toLowerCase()) {
-                    case "order":
-                    case "payment":
-                        boolean isOrderEnabled = prefs.getBoolean("order_noti", true);
-                        if (!isOrderEnabled) {
-                            Log.d("FCM_SERVICE", "Chặn thành công thông báo ĐƠN HÀNG theo yêu cầu user!");
-                            return;
-                        }
-                        break;
-                    case "promotion":
-                        boolean isPromoEnabled = prefs.getBoolean("promo_noti", true);
-                        if (!isPromoEnabled) {
-                            Log.d("FCM_SERVICE", "Chặn thành công thông báo KHUYẾN MÃI theo yêu cầu user!");
-                            return;
-                        }
-                        break;
-
-                    case "system":
-                        break;
+            if (data.containsKey("notification")) {
+                String jsonString = data.get("notification");
+                try {
+                    org.json.JSONObject jsonObject = new org.json.JSONObject(jsonString);
+                    if (jsonObject.has("title")) {
+                        title = jsonObject.getString("title");
+                    }
+                    if (jsonObject.has("body")) {
+                        body = jsonObject.getString("body");
+                    }
+                    if (jsonObject.has("type")) {
+                        notiType = jsonObject.getString("type");
+                    }
+                } catch (org.json.JSONException e) {
+                    Log.e("FCM_ERROR", "Lỗi Parse JSON từ Backend: " + e.getMessage());
                 }
             }
-            showNotification(title, body);
+            else {
+                if (data.containsKey("title")) title = data.get("title");
+                if (data.containsKey("body")) body = data.get("body");
+                if (data.containsKey("type")) notiType = data.get("type");
+            }
         }
+        Intent broadcastIntent = new Intent("ACTION_UPDATE_NOTI_BADGE");
+        broadcastIntent.setPackage(getPackageName());
+        sendBroadcast(broadcastIntent);
+
+        String token = SharedPrefsManager.getInstance(getApplicationContext()).getAccessToken();
+        if (token == null || token.isEmpty()) {
+            Log.d("FCM_SERVICE", "User đã đăng xuất, từ chối hiển thị thông báo cũ!");
+            return;
+        }
+
+        SharedPreferences prefs = getSharedPreferences("NotificationPrefs", Context.MODE_PRIVATE);
+        if (notiType != null) {
+            switch (notiType.toLowerCase()) {
+                case "order":
+                case "payment":
+                    boolean isOrderEnabled = prefs.getBoolean("order_noti", true);
+                    if (!isOrderEnabled) return;
+                    break;
+                case "promotion":
+                    boolean isPromoEnabled = prefs.getBoolean("promo_noti", true);
+                    if (!isPromoEnabled) return;
+                    break;
+                case "system":
+                    break;
+            }
+        }
+        showNotification(title, body);
     }
 
     private void showNotification(String title, String body) {
