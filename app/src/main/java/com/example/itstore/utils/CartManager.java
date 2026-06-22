@@ -7,7 +7,11 @@ public class CartManager {
     private List<CartItem> cartList;
 
     private List<CartItem> checkoutList;
+    private boolean needRefresh = true;
 
+    public void markCartNeedRefresh() { needRefresh = true; }
+    public boolean isCartNeedRefresh() { return needRefresh; }
+    public void clearCartNeedRefresh() { needRefresh = false; }
     private CartManager() {
 
         cartList = new ArrayList<>();

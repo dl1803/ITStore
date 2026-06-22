@@ -68,7 +68,7 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+        profileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
         notificationViewModel = new ViewModelProvider(this).get(NotificationViewModel.class);
         setupObservers();
 
@@ -99,7 +99,7 @@ public class ProfileFragment extends Fragment {
             binding.tvNameUser.setText(cachedName);
             binding.tvEmailUser.setText(cachedEmail);
 
-            profileViewModel.fetchProfile();
+            profileViewModel.loadProfileIfNeeded();
             notificationViewModel.fetchUnreadCount();
             binding.tvLogout.setOnClickListener(v -> {
                 profileViewModel.logout();

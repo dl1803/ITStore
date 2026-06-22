@@ -293,6 +293,7 @@ public class CheckoutActivity extends AppCompatActivity {
                 if (binding.rbCod.isChecked()){
                     // Luồng 1: Tiền mặt -> Xóa giỏ hàng và sang trang Success
                     CartManager.getInstance().clearPurchasedItems();
+                    CartManager.getInstance().markCartNeedRefresh();
                     Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
 
                     int orderId = checkoutViewModel.getCreatedOrderId().getValue();

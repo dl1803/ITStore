@@ -63,7 +63,7 @@ public class CartFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
         setupRecyclerView();
         observeViewModel();
 
@@ -93,7 +93,7 @@ public class CartFragment extends Fragment {
 
         binding.cbBuyAll.setOnClickListener(v -> cartViewModel.toggleSelectAll(binding.cbBuyAll.isChecked()));
 
-        cartViewModel.fetchCart();
+        cartViewModel.loadCartIfNeeded();
         cartViewModel.fetchActiveCoupons();
     }
 

@@ -16,6 +16,8 @@ import com.example.itstore.model.ProfileResponse;
 import com.example.itstore.model.UpdateProfileRequest;
 import com.example.itstore.model.User;
 import com.example.itstore.repository.UserRepository;
+import com.example.itstore.repository.WishlistRepository;
+import com.example.itstore.utils.CartManager;
 import com.example.itstore.utils.SharedPrefsManager;
 
 import org.json.JSONObject;
@@ -86,7 +88,10 @@ public class ProfileViewModel extends AndroidViewModel {
     public LiveData<String> getAvatarUpdateStatus() {
         return avatarUpdateStatus;
     }
-
+    public void loadProfileIfNeeded() {
+        if (!UserRepository.isNeedRefresh()) return;
+        fetchProfile();
+    }
     public ProfileViewModel(@NonNull Application application) {
         super(application);
         userRepository = UserRepository.getInstance(application);
@@ -100,6 +105,7 @@ public class ProfileViewModel extends AndroidViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     if (response.body().isSuccess()) {
                         userProfile.setValue(response.body().getData());
+                        UserRepository.clearNeedRefresh();
                     } else {
                         errorMessage.setValue("Lỗi từ server!");
                     }
@@ -116,6 +122,10 @@ public class ProfileViewModel extends AndroidViewModel {
     }
 
     public void logout() {
+        CartManager.getInstance().markCartNeedRefresh();
+        WishlistRepository.markNeedRefresh();
+        UserRepository.markNeedRefresh();
+
         String refreshToken = SharedPrefsManager.getInstance(getApplication()).getRefreshToken();
 
         if (refreshToken == null || refreshToken.isEmpty()) {
@@ -181,6 +191,7 @@ public class ProfileViewModel extends AndroidViewModel {
                     if (response.body().isSuccess()) {
                         userProfile.setValue(response.body().getData());
                         updateSuccessMessage.setValue("Cập nhật thành công!");
+                        UserRepository.markNeedRefresh();
                     } else {
                         errorMessage.setValue("Lỗi cập nhật!");
                     }
@@ -290,6 +301,7 @@ public class ProfileViewModel extends AndroidViewModel {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     avatarUpdateStatus.setValue("Cập nhật thành công!");
+                    UserRepository.markNeedRefresh();
                 } else {
                     avatarUpdateStatus.setValue("Cập nhật thất bại!");
                 }

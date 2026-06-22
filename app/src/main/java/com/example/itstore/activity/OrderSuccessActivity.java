@@ -18,6 +18,7 @@ import com.example.itstore.R;
 import com.example.itstore.databinding.ActivityOrderSuccessBinding;
 import com.example.itstore.model.Order;
 import com.example.itstore.utils.CartManager;
+import com.example.itstore.repository.WishlistRepository;
 
 public class OrderSuccessActivity extends AppCompatActivity {
 
@@ -64,6 +65,7 @@ public class OrderSuccessActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         binding.btnContinueBuy.setOnClickListener(v -> {
+            WishlistRepository.markNeedRefresh();
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);

@@ -42,6 +42,7 @@ import com.example.itstore.viewmodel.WishlistViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -78,7 +79,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
-        wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
+        wishlistViewModel = new ViewModelProvider(requireActivity()).get(WishlistViewModel.class);
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         layoutIndicators = binding.layoutIndicators;
@@ -218,6 +219,12 @@ public class HomeFragment extends Fragment {
         rcvProducts.setAdapter(productAdapter);
         homeViewModel.getProductListLiveData().observe(getViewLifecycleOwner(), products -> {
             if (products != null) {
+                Set<Integer> wishlistIds = wishlistViewModel.getWishlistProductIds().getValue();
+                if (wishlistIds != null) {
+                    for (Product p : products) {
+                        p.setFavorite(wishlistIds.contains(p.getId()));
+                    }
+                }
                 productAdapter.updateList(products);
             }
         });
@@ -262,16 +269,14 @@ public class HomeFragment extends Fragment {
             androidx.navigation.Navigation.findNavController(v).navigate(R.id.nav_search);
         });
         // goi ham lay san pham tu api
-        homeViewModel.fetchBanners();
-        homeViewModel.fetchCategories();
-        homeViewModel.fetchSuggestedProducts();
+        homeViewModel.loadInitialDataIfNeeded();
         return view;
 
     }
     @Override
     public void onResume() {
         super.onResume();
-        wishlistViewModel.fetchWishlist();
+        wishlistViewModel.loadWishlistIfNeeded();
     }
     @Override
     public void onDestroyView() {

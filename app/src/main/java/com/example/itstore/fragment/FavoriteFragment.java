@@ -54,7 +54,7 @@ public class FavoriteFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
+        wishlistViewModel = new ViewModelProvider(requireActivity()).get(WishlistViewModel.class);
 
         FavoriteAdapter.OnFavoriteClickListener favoriteListener = new FavoriteAdapter.OnFavoriteClickListener() {
             @Override
@@ -117,7 +117,7 @@ public class FavoriteFragment extends Fragment {
         super.onResume();
         String token = SharedPrefsManager.getInstance(requireContext()).getAccessToken();
         if (token != null && !token.isEmpty()) {
-            wishlistViewModel.fetchWishlist();
+            wishlistViewModel.loadWishlistIfNeeded();
         }
     }
 }

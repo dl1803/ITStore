@@ -95,6 +95,7 @@ public class ProductDetailViewModel extends AndroidViewModel {
                     public void onResponse(Call<CartResponse> call, Response<CartResponse> response) {
                         if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                             android.widget.Toast.makeText(getApplication(), "Đã thêm vào giỏ hàng!", android.widget.Toast.LENGTH_SHORT).show();
+                            CartManager.getInstance().markCartNeedRefresh();
                         } else {
                             android.widget.Toast.makeText(getApplication(), "Không thể thêm vào giỏ hàng", android.widget.Toast.LENGTH_SHORT).show();
                         }
