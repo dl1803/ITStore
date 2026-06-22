@@ -97,6 +97,8 @@ public class CheckoutActivity extends AppCompatActivity {
             if (passedCode != null && passedAmount > 0) {
                 appliedVoucherCode = passedCode;
                 checkoutViewModel.applyDiscount(passedAmount, passedId);
+                binding.tvVoucherCode.setText(passedCode);
+                binding.tvVoucherCode.setTextColor(getResources().getColor(R.color.orange_primary));
             }
         } else {
             Toast.makeText(this, "Lỗi: Không tìm thấy sản phẩm nào!", Toast.LENGTH_SHORT).show();
@@ -112,13 +114,8 @@ public class CheckoutActivity extends AppCompatActivity {
             }
 
             List<CartItem> purchasedItems = checkoutViewModel.getCheckoutItems().getValue();
-            if (purchasedItems == null || purchasedItems.isEmpty()) {
-                Toast.makeText(this, "Đơn hàng rỗng!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (selectedAddressId == -1) {
-                Toast.makeText(this, "Vui lòng chọn địa chỉ nhận hàng!", Toast.LENGTH_SHORT).show();
+            if (purchasedItems == null || purchasedItems.isEmpty() || selectedAddressId == -1) {
+                Toast.makeText(this, "Thiếu thông tin đơn hàng hoặc địa chỉ!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -128,6 +125,7 @@ public class CheckoutActivity extends AppCompatActivity {
             }
 
             Integer couponId = checkoutViewModel.getSelectedCouponId().getValue();
+            if (couponId != null && couponId == -1) couponId = null;
 
             CreateOrderRequest request = new CreateOrderRequest(
                     selectedAddressId,
@@ -143,6 +141,8 @@ public class CheckoutActivity extends AppCompatActivity {
         });
         addressViewModel.fetchAddresses(this);
         checkoutViewModel.fetchActiveCoupons();
+
+
     }
 
     // TÍNH NĂNG 1: CHỌN ĐỊA CHỈ TỪ DANH SÁCH
@@ -255,8 +255,9 @@ public class CheckoutActivity extends AppCompatActivity {
             discountAmount = coupon.getDiscountValue();
         }
 
-        checkoutViewModel.applyDiscount(discountAmount, coupon.getId());
         appliedVoucherCode = coupon.getCode();
+
+        checkoutViewModel.applyDiscount(discountAmount, coupon.getId());
 
         Toast.makeText(this, "Đã áp dụng mã: " + coupon.getCode(), Toast.LENGTH_SHORT).show();
     }
@@ -342,6 +343,16 @@ public class CheckoutActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url));
                 startActivity(intent);
+            }
+        });
+
+        checkoutViewModel.getSelectedCouponId().observe(this, couponId -> {
+            if (couponId != null && couponId != -1) {
+                binding.tvVoucherCode.setText(appliedVoucherCode);
+                binding.tvVoucherCode.setTextColor(getResources().getColor(R.color.orange_primary));
+            } else {
+                binding.tvVoucherCode.setText("Chọn hoặc nhập mã");
+                binding.tvVoucherCode.setTextColor(android.graphics.Color.parseColor("#888888"));
             }
         });
     }
