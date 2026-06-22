@@ -1,5 +1,6 @@
 package com.example.itstore.fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -62,8 +63,14 @@ public class ProfileFragment extends Fragment {
             }
         }
     });
-
-
+    private final BroadcastReceiver notiReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(android.content.Context context, Intent intent) {
+            if (notificationViewModel != null) {
+                notificationViewModel.fetchUnreadCount();
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -159,7 +166,20 @@ public class ProfileFragment extends Fragment {
         String token = SharedPrefsManager.getInstance(requireContext()).getAccessToken();
         if (token != null && !token.isEmpty()) {
             notificationViewModel.fetchUnreadCount();
+            androidx.core.content.ContextCompat.registerReceiver(
+                    requireContext(),
+                    notiReceiver,
+                    new android.content.IntentFilter("ACTION_UPDATE_NOTI_BADGE"),
+                    androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+            );
         }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            requireActivity().unregisterReceiver(notiReceiver);
+        } catch (Exception ignored) {}
     }
     private void setupObservers() {
         notificationViewModel.getUnreadCountLiveData().observe(getViewLifecycleOwner(), count -> {
@@ -167,7 +187,11 @@ public class ProfileFragment extends Fragment {
 
             if (count != null && count > 0) {
                 binding.tvNotificationBadge.setVisibility(View.VISIBLE);
-                binding.tvNotificationBadge.setText(String.valueOf(count));
+                if (count > 9) {
+                    binding.tvNotificationBadge.setText("9+");
+                } else {
+                    binding.tvNotificationBadge.setText(String.valueOf(count));
+                }
             } else {
                 binding.tvNotificationBadge.setVisibility(View.GONE);
             }

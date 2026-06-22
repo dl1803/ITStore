@@ -63,7 +63,7 @@ public class NotificationActivity extends AppCompatActivity {
             viewModel.markAllNotificationsAsRead();
             Toast.makeText(NotificationActivity.this, "Đã đánh dấu đọc tất cả thông báo!", Toast.LENGTH_SHORT).show();
         });
-        viewModel.fetchNotifications(1, 5, null);
+        viewModel.fetchNotifications(1, 20, null);
         connectToNotificationStream();
     }
     private void setupObservers() {
