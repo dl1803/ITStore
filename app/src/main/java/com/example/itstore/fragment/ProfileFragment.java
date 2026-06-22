@@ -1,5 +1,6 @@
 package com.example.itstore.fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.itstore.activity.AddressActivity;
 import com.example.itstore.activity.ChangePasswordActivity;
 import com.example.itstore.activity.EditProfileActivity;
@@ -28,6 +30,7 @@ import com.example.itstore.activity.UnreviewedListActivity;
 import com.example.itstore.api.RetrofitClient;
 import com.example.itstore.databinding.FragmentProfileBinding;
 import com.example.itstore.model.NotificationUnreadCountResponse;
+import com.example.itstore.utils.CustomGlideUrl;
 import com.example.itstore.utils.SharedPrefsManager;
 import com.example.itstore.viewmodel.NotificationViewModel;
 import com.example.itstore.viewmodel.ProfileViewModel;
@@ -44,6 +47,7 @@ public class ProfileFragment extends Fragment {
     private FragmentProfileBinding binding;
     private ProfileViewModel profileViewModel;
     private NotificationViewModel notificationViewModel;
+    private String currentAvatarUrl = "";
 
     // Chọn ảnh từ thư viện
     private final ActivityResultLauncher<String> pickImgLauncher = registerForActivityResult(
@@ -59,8 +63,14 @@ public class ProfileFragment extends Fragment {
             }
         }
     });
-
-
+    private final BroadcastReceiver notiReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(android.content.Context context, Intent intent) {
+            if (notificationViewModel != null) {
+                notificationViewModel.fetchUnreadCount();
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -156,7 +166,20 @@ public class ProfileFragment extends Fragment {
         String token = SharedPrefsManager.getInstance(requireContext()).getAccessToken();
         if (token != null && !token.isEmpty()) {
             notificationViewModel.fetchUnreadCount();
+            androidx.core.content.ContextCompat.registerReceiver(
+                    requireContext(),
+                    notiReceiver,
+                    new android.content.IntentFilter("ACTION_UPDATE_NOTI_BADGE"),
+                    androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+            );
         }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            requireActivity().unregisterReceiver(notiReceiver);
+        } catch (Exception ignored) {}
     }
     private void setupObservers() {
         notificationViewModel.getUnreadCountLiveData().observe(getViewLifecycleOwner(), count -> {
@@ -164,7 +187,11 @@ public class ProfileFragment extends Fragment {
 
             if (count != null && count > 0) {
                 binding.tvNotificationBadge.setVisibility(View.VISIBLE);
-                binding.tvNotificationBadge.setText(String.valueOf(count));
+                if (count > 9) {
+                    binding.tvNotificationBadge.setText("9+");
+                } else {
+                    binding.tvNotificationBadge.setText(String.valueOf(count));
+                }
             } else {
                 binding.tvNotificationBadge.setVisibility(View.GONE);
             }
@@ -183,12 +210,21 @@ public class ProfileFragment extends Fragment {
                 binding.tvRoleUser.setText(user.getRole());
 
                 if (user.getAvatar_url() != null && !user.getAvatar_url().isEmpty()) {
-                    Glide.with(requireContext())
-                            .load(user.getAvatar_url())
-                            .circleCrop()
-                            .placeholder(android.R.drawable.ic_menu_camera)
-                            .error(android.R.drawable.ic_menu_camera)
-                            .into(binding.imgAvatar);
+
+                    String fullUrl = user.getAvatar_url();
+                    String cleanUrl = fullUrl.split("\\?")[0];
+
+                    if (!user.getAvatar_url().equals(currentAvatarUrl)) {
+                        currentAvatarUrl = cleanUrl;
+                        Glide.with(requireContext())
+                                .load(new CustomGlideUrl(fullUrl))
+                                .circleCrop()
+                                .placeholder(android.R.drawable.ic_menu_camera)
+                                .error(android.R.drawable.ic_menu_camera)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .dontAnimate()
+                                .into(binding.imgAvatar);
+                    }
                 }
             }
         });

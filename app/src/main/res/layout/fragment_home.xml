@@ -5,244 +5,225 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <!--    Header-->
-        <LinearLayout
-            android:id="@+id/headerLayout"
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            >
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/header_rounded"
-                >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tvTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif"
-                        android:padding="8dp"
-                        android:text="IT STORE"
-                        android:textColor="@color/white"
-                        android:textSize="20dp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"></TextView>
-
-                    <ImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_computer"
-                        app:tint="@color/white"></ImageView>
-                </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            android:background="@drawable/header_rounded">
 
             <LinearLayout
-                android:id="@+id/layoutSearchBar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:orientation="horizontal">
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="18dp"
-                    android:layout_weight="1"
-                    app:cardBackgroundColor="#EEEEEE"
-                    app:cardCornerRadius="16dp">
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:padding="8dp"
+                    android:text="IT STORE"
+                    android:textColor="@color/white"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"></TextView>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical|center"
-                        android:text="Tìm kiếm sản phẩm ngay tại đây"
-                        android:textColor="#808080"
-                        android:textSize="14dp"
-                        android:textStyle="italic"></TextView>
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/btnFindProduct"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:layout_marginRight="14dp"
-                    app:cardBackgroundColor="@color/gray_background"
-                    app:cardCornerRadius="22dp"
-                    app:cardElevation="1dp">
-
-                    <ImageView
-                        android:layout_width="42dp"
-                        android:layout_height="match_parent"
-                        android:padding="6dp"
-                        android:src="@drawable/ic_search"
-                        app:tint="#808080" />
-                </androidx.cardview.widget.CardView>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_computer"
+                    app:tint="@color/white"></ImageView>
             </LinearLayout>
-        </LinearLayout>
-        <!--    Container-->
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/headerLayout"
-            app:layout_constraintBottom_toBottomOf="parent"
-            >
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+            android:id="@+id/layoutSearchBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="18dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="#EEEEEE"
+                app:cardCornerRadius="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical|center"
+                    android:text="Tìm kiếm sản phẩm ngay tại đây"
+                    android:textColor="#808080"
+                    android:textSize="14dp"
+                    android:textStyle="italic"></TextView>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btnFindProduct"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginRight="14dp"
+                app:cardBackgroundColor="@color/gray_background"
+                app:cardCornerRadius="22dp"
+                app:cardElevation="1dp">
+
+                <ImageView
+                    android:layout_width="42dp"
+                    android:layout_height="match_parent"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_search"
+                    app:tint="#808080" />
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/innerConstraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingBottom="20dp">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPagerBanner"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <LinearLayout
+                android:id="@+id/layoutIndicators"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="12dp"
+                app:layout_constraintBottom_toBottomOf="@id/viewPagerBanner"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="20dp"
+                    android:layout_height="6dp"
+                    android:layout_marginHorizontal="4dp"
+                    app:cardCornerRadius="3dp"
+                    app:cardBackgroundColor="#FF9800"
+                    app:cardElevation="0dp"/>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginHorizontal="4dp"
+                    app:cardCornerRadius="3dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="0dp"/>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginHorizontal="4dp"
+                    app:cardCornerRadius="3dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardElevation="0dp"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvLabelCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Danh mục nổi bật"
+                android:textSize="16dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/viewPagerBanner"
+                android:layout_marginTop="12dp"
+                android:layout_marginLeft="20dp" />
+
+            <TextView
+                android:id="@+id/tvSeeAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginRight="20dp"
+                android:text="Xem tất cả"
+                android:textColor="@color/orange_primary"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/viewPagerBanner"></TextView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerCategory"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelCategory"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_category"
+                android:clipToPadding="true" />
+
+            <TextView
+                android:id="@+id/tvLabelProduct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gợi ý hôm nay"
+                android:textSize="16dp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:layout_marginTop="12dp"
+                android:layout_marginLeft="20dp"
+                app:layout_constraintTop_toBottomOf="@id/recyclerCategory"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerProduct"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp">
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="12dp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvLabelProduct"
+                app:layout_constraintVertical_bias="0.0"
+                app:spanCount="2"
+                tools:itemCount="4"
+                tools:listitem="@layout/item_product" />
 
-    <!--            Banner-->
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/viewPagerBanner"
-                    android:layout_width="match_parent"
-                    android:layout_height="180dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-
-                    />
-                <!--        ...-->
-                <LinearLayout
-                    android:id="@+id/layoutIndicators"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingBottom="12dp"
-                    app:layout_constraintBottom_toBottomOf="@id/viewPagerBanner"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent">
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="20dp"
-                        android:layout_height="6dp"
-                        android:layout_marginHorizontal="4dp"
-                        app:cardCornerRadius="3dp"
-                        app:cardBackgroundColor="#FF9800"
-                        app:cardElevation="0dp"/>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="6dp"
-                        android:layout_height="6dp"
-                        android:layout_marginHorizontal="4dp"
-                        app:cardCornerRadius="3dp"
-                        app:cardBackgroundColor="#FFFFFF"
-                        app:cardElevation="0dp"/>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="6dp"
-                        android:layout_height="6dp"
-                        android:layout_marginHorizontal="4dp"
-                        app:cardCornerRadius="3dp"
-                        app:cardBackgroundColor="#FFFFFF"
-                        app:cardElevation="0dp"/>
-    <!--            Menu-->
-                </LinearLayout>
-                    <TextView
-                        android:id="@+id/tvLabelCategory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Danh mục nổi bật"
-                        android:textSize="16dp"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/viewPagerBanner"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginLeft="20dp"
-                        >
-                    </TextView>
-
-                <TextView
-                    android:id="@+id/tvSeeAll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginRight="20dp"
-                    android:text="Xem tất cả"
-                    android:textColor="@color/orange_primary"
-                    android:textSize="14dp"
-                    android:textStyle="bold"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/viewPagerBanner"></TextView>
-    <!--            Category-->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerCategory"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvLabelCategory"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal"
-                    android:paddingLeft="20dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/item_category"
-                    android:clipToPadding="true"
-                    >
-                </androidx.recyclerview.widget.RecyclerView>
-    <!--            Product-->
-                <TextView
-                    android:id="@+id/tvLabelProduct"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Gợi ý hôm nay"
-                    android:textSize="16dp"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginLeft="20dp"
-                    app:layout_constraintTop_toBottomOf="@id/recyclerCategory"
-                    app:layout_constraintStart_toStartOf="parent" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerProduct"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginRight="12dp"
-                    android:layout_marginTop="12dp"
-
-
-                    android:paddingBottom="120dp"
-                    android:clipToPadding="false"
-
-
-                    android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                    app:layout_constraintBottom_toBottomOf="parent"
-
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvLabelProduct"
-
-                    app:spanCount="2"
-                    tools:itemCount="8"
-                    tools:listitem="@layout/item_product">
-
-                </androidx.recyclerview.widget.RecyclerView>
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.core.widget.NestedScrollView>
-
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

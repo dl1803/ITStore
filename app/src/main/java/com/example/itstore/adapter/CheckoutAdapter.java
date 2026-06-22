@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.itstore.R;
 import com.example.itstore.model.CartItem;
 
@@ -52,11 +53,23 @@ public class CheckoutAdapter extends RecyclerView.Adapter<CheckoutAdapter.Checko
             holder.tvOldPrice.setVisibility(View.GONE);
         }
 
-        Glide.with(holder.itemView.getContext())
-                .load(item.getProduct().getImageUrl())
-                .placeholder(R.drawable.ic_search)
-                .error(R.drawable.ic_launcher_background)
-                .into(holder.imgProduct);
+        String imgUrl = item.getImageUrl();
+
+        if ((imgUrl == null || imgUrl.trim().isEmpty()) && item.getProduct().getImageUrl() != null) {
+            imgUrl = item.getProduct().getImageUrl();
+        }
+
+        if (imgUrl == null || imgUrl.trim().isEmpty()) {
+            holder.imgProduct.setImageResource(R.drawable.ic_search);
+        } else {
+            Glide.with(holder.itemView.getContext())
+                    .load(imgUrl)
+                    .placeholder(R.drawable.ic_search)
+                    .error(R.drawable.ic_search)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .dontAnimate()
+                    .into(holder.imgProduct);
+        }
     }
 
     @Override

@@ -15,6 +15,7 @@ import com.example.itstore.model.Brand;
 import com.example.itstore.model.BrandResponse;
 import com.example.itstore.model.Category;
 import com.example.itstore.model.MockDataRepository;
+import com.example.itstore.model.Pagination;
 import com.example.itstore.model.Product;
 import com.example.itstore.model.ProductResponse;
 import com.example.itstore.repository.ProductRepository;
@@ -43,30 +44,50 @@ public class SearchViewModel extends AndroidViewModel {
     public MutableLiveData<List<Brand>> getListBrandsLiveData() {
         return listBrandsLiveData;
     }
-
+    private final MutableLiveData<Boolean> _hasMore = new MutableLiveData<>(true);
+    public LiveData<Boolean> getHasMore() { return _hasMore; }
     public SearchViewModel(@NonNull Application application) {
         super(application);
         productRepository = ProductRepository.getInstance(application);
         historyRepository = SearchHistoryRepository.getInstance(application);
         searchHistoryLiveData.setValue(historyRepository.getHistory());
     }
-    public void searchProducts(String query, int categoryId, double minPrice, double maxPrice, List<Integer> brandIds) {
+    public void searchProducts(String query, int categoryId, double minPrice, double maxPrice, List<Integer> brandIds, int page, boolean isLoadMore) {
 
         Integer apiCategoryId = (categoryId == -1) ? null : categoryId;
         Double apiMinPrice = (minPrice <= 0) ? null : minPrice;
         Double apiMaxPrice = (maxPrice == Double.MAX_VALUE) ? null : maxPrice;
         Integer apiBrandId = (brandIds != null && !brandIds.isEmpty()) ? brandIds.get(0) : null;
-        productRepository.getProducts(1, 20, query, apiCategoryId, apiBrandId, apiMinPrice, apiMaxPrice, null, new Callback<ProductResponse>() {
+
+        productRepository.getProducts(page, 10, query, apiCategoryId, apiBrandId, apiMinPrice, apiMaxPrice, null, new Callback<ProductResponse>() {
             @Override
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    _searchResults.setValue(response.body().getData());
+                    List<Product> newProducts = response.body().getData();
+                    if (response.body().getPagination() != null) {
+                        Pagination p = response.body().getPagination();
+                        boolean calculatedHasMore = p.getPage() < p.getTotalPages();
+                        _hasMore.setValue(calculatedHasMore);
+                    }
+
+                    if (isLoadMore) {
+                        List<Product> currentList = _searchResults.getValue();
+                        List<Product> combinedList = new ArrayList<>();
+                        if (currentList != null) {
+                            combinedList.addAll(currentList);
+                        }
+                        combinedList.addAll(newProducts);
+                        _searchResults.setValue(combinedList);
+                    } else {
+                        _searchResults.setValue(newProducts);
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<ProductResponse> call, Throwable t) {
                 Log.e("API_ERR", "Lỗi tìm kiếm sản phẩm: " + t.getMessage());
+                _hasMore.setValue(false);
             }
         });
     }

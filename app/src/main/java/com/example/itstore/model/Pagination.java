@@ -14,6 +14,8 @@ public class Pagination {
 
     @SerializedName("total_pages")
     private int totalPages;
+    @SerializedName("hasMore")
+    private boolean hasMore;
 
     public int getPage() {
         return page;
@@ -45,5 +47,12 @@ public class Pagination {
 
     public void setTotalPages(int totalPages) {
         this.totalPages = totalPages;
+    }
+    public boolean isHasMore() {
+        return hasMore;
+    }
+
+    public void setHasMore(boolean hasMore) {
+        this.hasMore = hasMore;
     }
 }

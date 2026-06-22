@@ -267,11 +267,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:text="Shopee Voucher"
+                    android:text="Voucher"
                     android:textColor="@color/black"
                     android:textStyle="bold" ></TextView>
 
                 <TextView
+                    android:id="@+id/tvVoucherCode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Chọn hoặc nhập mã"

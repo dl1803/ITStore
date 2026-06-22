@@ -30,8 +30,8 @@
 
                 <ImageView
                     android:id="@+id/btnNotification"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
                     android:background="@drawable/rounded_box"
                     android:backgroundTint="@color/orange_light"
                     android:padding="8dp"
@@ -40,12 +40,15 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/orange_primary" />
+                    app:tint="@color/orange_primary"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="5dp"
+                    />
 
                 <TextView
                     android:id="@+id/tvNotificationBadge"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:background="@drawable/notification_badge"
                     android:elevation="4dp"
                     android:gravity="center"

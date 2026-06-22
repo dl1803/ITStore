@@ -3,6 +3,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.itstore.databinding.ItemCategoryBinding;
 import com.example.itstore.model.Category;
@@ -53,7 +54,30 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         }
     }
     public void updateData(List<Category> newCategoryList) {
+        if (this.categoryList == null) {
+            this.categoryList = newCategoryList;
+            notifyItemRangeInserted(0, newCategoryList.size());
+            return;
+        }
+
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override public int getOldListSize() { return categoryList.size(); }
+            @Override public int getNewListSize() { return newCategoryList.size(); }
+
+            @Override
+            public boolean areItemsTheSame(int oldPos, int newPos) {
+                // So sánh ID danh mục
+                return categoryList.get(oldPos).getId() == newCategoryList.get(newPos).getId();
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldPos, int newPos) {
+                // So sánh tên danh mục
+                return categoryList.get(oldPos).getName().equals(newCategoryList.get(newPos).getName());
+            }
+        });
+
         this.categoryList = newCategoryList;
-        notifyDataSetChanged();
+        diffResult.dispatchUpdatesTo(this);
     }
 }

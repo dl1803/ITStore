@@ -10,15 +10,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.itstore.R;
 import com.example.itstore.activity.OrderDetailActivity;
 import com.example.itstore.activity.ProductDetailActivity;
 import com.example.itstore.activity.WriteReviewActivity;
 import com.example.itstore.model.Order;
 import com.example.itstore.model.Product;
+import com.example.itstore.utils.CustomGlideUrl;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -26,9 +29,54 @@ import java.util.List;
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
     private List<Order> orderList;
 
-    public void setOrderList(List<Order> orderList){
+    public void setOrderList(List<Order> newOrderList){
+        if (this.orderList == null) {
+            this.orderList = newOrderList;
+            notifyItemRangeInserted(0, orderList.size());
+            return;
+        }
+
+        // Thư vện của Recycler : giúp ss ds cũ và mới
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return orderList.size();
+            }
+
+            @Override
+            public int getNewListSize() {
+                return orderList.size();
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                // So sánh theo orderId của 2 đơn hàng : xem cùng đơn hàng hay không -> trùng -> giữ nguyên ViewHolder
+                // nếu vị trí item nào lệch -> xóa -> tạo mới
+                return orderList.get(oldItemPosition)
+                        .getOrderId()
+                        .equals(orderList.get(newItemPosition).getOrderId());
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                // Kiểm tra xem nội dung(review) của 1 đơn hàng có thay đổi hay không -> nếu có thay đổi -> update
+                Order oldOrder = orderList.get(oldItemPosition);
+                Order newOrder = newOrderList.get(newItemPosition);
+
+                String statusOld = oldOrder.getStatusVN();
+                String statusNew = newOrder.getStatusVN();
+
+                boolean isRevOld = (oldOrder.getItems() != null && !oldOrder.getItems().isEmpty()) && oldOrder.getItems().get(0).isReviewed();
+                boolean isRevNew = (newOrder.getItems() != null && !newOrder.getItems().isEmpty()) && newOrder.getItems().get(0).isReviewed();
+
+                String oldImg = oldOrder.getImageUrl() != null ? oldOrder.getImageUrl().split("\\?")[0] : "";
+                String newImg = newOrder.getImageUrl() != null ? newOrder.getImageUrl().split("\\?")[0] : "";
+
+                return statusOld.equals(statusNew) && isRevOld == isRevNew && oldImg.equals(newImg);
+            }
+        });
         this.orderList = orderList;
-        notifyDataSetChanged();
+        diffResult.dispatchUpdatesTo(this); // chỉ gọi notifyItemChanged(vị trí item cụ thể) để cập nhật
     }
 
     public interface OnOrderClickListener {
@@ -82,9 +130,11 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         DecimalFormat formatter = new DecimalFormat("###,###,###");
         holder.tvTotalPrice.setText("Thành tiền: " + formatter.format(order.getTotalPrice() + 30000) + "đ");
         Glide.with(holder.itemView.getContext())
-                .load(order.getImageUrl())
+                .load(new CustomGlideUrl(order.getImageUrl()))
                 .placeholder(R.drawable.ic_search)
                 .error(R.drawable.ic_search)
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // lưu cả ảnh gốc và ảnh đã resize(ảnh resize chỉ lưu 1 lần từ imgview)
+                .dontAnimate() // bỏ hiệu ứng fade mặc định của glide
                 .into(holder.imgProductOrder);
 
         if (statusVN.equalsIgnoreCase("Đã giao")) {
