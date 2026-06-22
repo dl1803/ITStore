@@ -241,6 +241,14 @@ public class CartFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (cartViewModel != null) {
+            cartViewModel.loadCartIfNeeded();
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;

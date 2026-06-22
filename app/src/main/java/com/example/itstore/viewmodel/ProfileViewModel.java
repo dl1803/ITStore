@@ -33,7 +33,7 @@ import retrofit2.Response;
 
 public class ProfileViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
-    private final MutableLiveData<User> userProfile = new MutableLiveData<>();
+    private final MutableLiveData<User> userProfile;
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLogout = new MutableLiveData<>();
 
@@ -95,6 +95,7 @@ public class ProfileViewModel extends AndroidViewModel {
     public ProfileViewModel(@NonNull Application application) {
         super(application);
         userRepository = UserRepository.getInstance(application);
+        userProfile = new MutableLiveData<>(UserRepository.getCachedProfile());
     }
 
     public void fetchProfile() {
@@ -104,7 +105,8 @@ public class ProfileViewModel extends AndroidViewModel {
             public void onResponse(Call<ProfileResponse> call, Response<ProfileResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     if (response.body().isSuccess()) {
-                        userProfile.setValue(response.body().getData());
+                        UserRepository.updateCache(response.body().getData());
+                        userProfile.setValue(UserRepository.getCachedProfile());
                         UserRepository.clearNeedRefresh();
                     } else {
                         errorMessage.setValue("Lỗi từ server!");
@@ -125,6 +127,10 @@ public class ProfileViewModel extends AndroidViewModel {
         CartManager.getInstance().markCartNeedRefresh();
         WishlistRepository.markNeedRefresh();
         UserRepository.markNeedRefresh();
+
+        WishlistRepository.clearCache();
+        UserRepository.clearCache();
+        CartManager.getInstance().clearCart();
 
         String refreshToken = SharedPrefsManager.getInstance(getApplication()).getRefreshToken();
 
@@ -189,7 +195,8 @@ public class ProfileViewModel extends AndroidViewModel {
             public void onResponse(Call<ProfileResponse> call, Response<ProfileResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     if (response.body().isSuccess()) {
-                        userProfile.setValue(response.body().getData());
+                        UserRepository.updateCache(response.body().getData());
+                        userProfile.setValue(UserRepository.getCachedProfile());
                         updateSuccessMessage.setValue("Cập nhật thành công!");
                         UserRepository.markNeedRefresh();
                     } else {

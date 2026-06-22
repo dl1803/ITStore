@@ -28,6 +28,13 @@ public class CartManager {
     public List<CartItem> getCartList() {
         return cartList;
     }
+    public void setCartList(List<CartItem> items) {
+        this.cartList = (items != null) ? items : new ArrayList<>();
+    }
+    public void clearCart() {
+        this.cartList = new ArrayList<>();
+        this.checkoutList = new ArrayList<>();
+    }
     public void addToCart(CartItem newItem) {
         boolean isExist = false;
         for (CartItem item : cartList) {

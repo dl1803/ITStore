@@ -24,7 +24,7 @@ import retrofit2.Response;
 
 public class CartViewModel extends AndroidViewModel {
     private final CartRepository repository;
-    private final MutableLiveData<List<CartItem>> cartItemsLiveData = new MutableLiveData<>(new ArrayList<>());
+    private final MutableLiveData<List<CartItem>> cartItemsLiveData;
     private final MutableLiveData<Double> totalPriceLiveData = new MutableLiveData<>(0.0);
     private final MutableLiveData<Boolean> isAllSelectedLiveData = new MutableLiveData<>(false);
     private final MutableLiveData<List<Coupon>> couponList = new MutableLiveData<>();
@@ -43,6 +43,8 @@ public class CartViewModel extends AndroidViewModel {
     public CartViewModel(@NonNull Application application) {
         super(application);
         this.repository = CartRepository.getInstance(application);
+        this.cartItemsLiveData = new MutableLiveData<>(CartManager.getInstance().getCartList());
+        calculateTotal();
     }
     public void loadCartIfNeeded() {
         if (!CartManager.getInstance().isCartNeedRefresh()) {
@@ -291,6 +293,7 @@ public class CartViewModel extends AndroidViewModel {
                         List<CartItem> cartItems = response.body().getData();
                         if (cartItems != null) {
                             cartItemsLiveData.setValue(cartItems);
+                            CartManager.getInstance().setCartList(cartItems);
                             calculateTotal();
                         } else {
                             toastMessage.setValue("Lỗi từ server");
