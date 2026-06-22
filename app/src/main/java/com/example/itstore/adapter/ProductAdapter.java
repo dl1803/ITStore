@@ -101,4 +101,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         this.productList = newList;
         notifyDataSetChanged();
     }
+    public void appendList(List<Product> newItems) {
+        int startPos = this.productList.size();
+        this.productList.addAll(newItems);
+        notifyItemRangeInserted(startPos, newItems.size());
+    }
 }

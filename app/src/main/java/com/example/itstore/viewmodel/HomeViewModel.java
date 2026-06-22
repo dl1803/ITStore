@@ -21,6 +21,7 @@ import com.example.itstore.model.BrandResponse;
 import com.example.itstore.model.Category;
 import com.example.itstore.model.CategoryResponse;
 import com.example.itstore.model.MockDataRepository;
+import com.example.itstore.model.Pagination;
 import com.example.itstore.model.Product;
 import com.example.itstore.model.ProductImage;
 import com.example.itstore.model.ProductResponse;
@@ -37,12 +38,10 @@ public class HomeViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Product>> productListLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Banner>> bannerListLiveData = new MutableLiveData<>();
     private List<Product> allProducts = new ArrayList<>();
+    private final MutableLiveData<Boolean> hasMoreLiveData = new MutableLiveData<>(true);
     public HomeViewModel(@NonNull Application application) {
         super(application);
         this.repository = ProductRepository.getInstance(application);
-        allProducts = MockDataRepository.getInstance().getAllProducts();
-        categoryListLiveData.setValue(MockDataRepository.getInstance().getAllCategories());
-        productListLiveData.setValue(new ArrayList<>(allProducts));
     }
     public LiveData<List<Category>> getCategoryListLiveData() {
         return categoryListLiveData;
@@ -51,8 +50,11 @@ public class HomeViewModel extends AndroidViewModel {
         return productListLiveData;
     }
 
-    public LiveData<List<com.example.itstore.model.Banner>> getBannerListLiveData() {
+    public LiveData<List<Banner>> getBannerListLiveData() {
         return bannerListLiveData;
+    }
+    public LiveData<Boolean> getHasMoreLiveData() {
+        return hasMoreLiveData;
     }
 
     public void updateProduct(Product updatedProduct) {
@@ -105,19 +107,38 @@ public class HomeViewModel extends AndroidViewModel {
             }
         });
     }
-    public void fetchSuggestedProducts() {
-        repository.getProducts(1, 20, null, null, null, null, null, "newest", new Callback<ProductResponse>() {
+    public void fetchSuggestedProducts(int page, boolean isLoadMore) {
+        repository.getProducts(page, 10, null, null, null, null, null, "newest", new Callback<ProductResponse>() {
             @Override
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     List<Product> apiProducts = response.body().getData();
-                    productListLiveData.setValue(apiProducts);
-                    allProducts = apiProducts;
+                    if (response.body().getPagination() != null) {
+                        Pagination p = response.body().getPagination();
+                        boolean calculatedHasMore = p.getPage() < p.getTotalPages();
+                        hasMoreLiveData.setValue(calculatedHasMore);
+                    }
+                    if (isLoadMore) {
+                        List<Product> currentList = productListLiveData.getValue();
+                        List<Product> combinedList = new ArrayList<>();
+                        if (currentList != null) {
+                            combinedList.addAll(currentList);
+                        }
+                        combinedList.addAll(apiProducts);
+                        productListLiveData.setValue(combinedList);
+                        allProducts = combinedList;
+                    } else {
+                        productListLiveData.setValue(apiProducts);
+                        allProducts = apiProducts;
+                    }
+                } else {
+                    hasMoreLiveData.setValue(false);
                 }
             }
             @Override
             public void onFailure(Call<ProductResponse> call, Throwable t) {
                 Log.e("API_ERR", "Lỗi lấy sản phẩm Gợi ý: " + t.getMessage());
+                hasMoreLiveData.setValue(false);
             }
         });
     }
