@@ -9,6 +9,7 @@ import com.example.itstore.model.LogoutRequest;
 import com.example.itstore.model.LogoutResponse;
 import com.example.itstore.model.ProfileResponse;
 import com.example.itstore.model.UpdateProfileRequest;
+import com.example.itstore.model.User;
 
 import okhttp3.MultipartBody;
 import retrofit2.Callback;
@@ -18,9 +19,16 @@ public class UserRepository {
     private final RetrofitClient.ApiService apiService;
     private static boolean needRefresh = true;
 
+    private static User cachedProfile = null;
+
     public static void markNeedRefresh() { needRefresh = true; }
     public static boolean isNeedRefresh() { return needRefresh; }
     public static void clearNeedRefresh() { needRefresh = false; }
+
+    public static User getCachedProfile() { return cachedProfile; }
+    public static void updateCache(User user) { cachedProfile = user; }
+    public static void clearCache() { cachedProfile = null; }
+
     private UserRepository(Context context) {
         this.apiService = RetrofitClient.getApiService(context);
     }

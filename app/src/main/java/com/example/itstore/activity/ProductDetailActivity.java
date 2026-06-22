@@ -99,7 +99,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Sản phẩm không có dữ liệu chi tiết!", Toast.LENGTH_SHORT).show();
         }
 
-        wishlistViewModel.fetchWishlist();
+        wishlistViewModel.loadWishlistIfNeeded();
 
         wishlistViewModel.getWishlistProductIds().observe(this, productIds -> {
             updateFavoriteIcon(productIds.contains(currentProduct.getId()));

@@ -37,6 +37,7 @@ public class HomeViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Category>> categoryListLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Product>> productListLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Banner>> bannerListLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> hasMoreLiveData = new MutableLiveData<>();
     private List<Product> allProducts = new ArrayList<>();
     private boolean isDataLoaded = false;
 
@@ -118,6 +119,9 @@ public class HomeViewModel extends AndroidViewModel {
                 Log.e("API_ERR", "Lỗi lấy danh mục Home: " + t.getMessage());
             }
         });
+    }
+    public void fetchSuggestedProducts() {
+        fetchSuggestedProducts(1, false);
     }
     public void fetchSuggestedProducts(int page, boolean isLoadMore) {
         repository.getProducts(page, 10, null, null, null, null, null, "newest", new Callback<ProductResponse>() {
