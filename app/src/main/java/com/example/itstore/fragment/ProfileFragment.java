@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.itstore.activity.AddressActivity;
 import com.example.itstore.activity.ChangePasswordActivity;
 import com.example.itstore.activity.EditProfileActivity;
@@ -28,6 +29,7 @@ import com.example.itstore.activity.UnreviewedListActivity;
 import com.example.itstore.api.RetrofitClient;
 import com.example.itstore.databinding.FragmentProfileBinding;
 import com.example.itstore.model.NotificationUnreadCountResponse;
+import com.example.itstore.utils.CustomGlideUrl;
 import com.example.itstore.utils.SharedPrefsManager;
 import com.example.itstore.viewmodel.NotificationViewModel;
 import com.example.itstore.viewmodel.ProfileViewModel;
@@ -44,6 +46,7 @@ public class ProfileFragment extends Fragment {
     private FragmentProfileBinding binding;
     private ProfileViewModel profileViewModel;
     private NotificationViewModel notificationViewModel;
+    private String currentAvatarUrl = "";
 
     // Chọn ảnh từ thư viện
     private final ActivityResultLauncher<String> pickImgLauncher = registerForActivityResult(
@@ -183,12 +186,21 @@ public class ProfileFragment extends Fragment {
                 binding.tvRoleUser.setText(user.getRole());
 
                 if (user.getAvatar_url() != null && !user.getAvatar_url().isEmpty()) {
-                    Glide.with(requireContext())
-                            .load(user.getAvatar_url())
-                            .circleCrop()
-                            .placeholder(android.R.drawable.ic_menu_camera)
-                            .error(android.R.drawable.ic_menu_camera)
-                            .into(binding.imgAvatar);
+
+                    String fullUrl = user.getAvatar_url();
+                    String cleanUrl = fullUrl.split("\\?")[0];
+
+                    if (!user.getAvatar_url().equals(currentAvatarUrl)) {
+                        currentAvatarUrl = cleanUrl;
+                        Glide.with(requireContext())
+                                .load(new CustomGlideUrl(fullUrl))
+                                .circleCrop()
+                                .placeholder(android.R.drawable.ic_menu_camera)
+                                .error(android.R.drawable.ic_menu_camera)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .dontAnimate()
+                                .into(binding.imgAvatar);
+                    }
                 }
             }
         });

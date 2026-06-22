@@ -6,12 +6,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.itstore.R;
 import com.example.itstore.databinding.ItemProductBinding;
 import com.example.itstore.model.Product;
+import com.example.itstore.utils.CustomGlideUrl;
+
 import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder>{
     private Context context;
@@ -50,8 +54,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         android.util.Log.d("KIEM_TRA_LINK", "Tên SP: " + product.getName() + " | Link ảnh: " + product.getImageUrl());
 
         Glide.with(context)
-                .load(product.getImageUrl())
+                .load(new CustomGlideUrl(product.getImageUrl()))
                 .placeholder(R.drawable.ic_search)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .dontAnimate()
                 .into(holder.binding.imgProduct);
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
@@ -98,8 +104,36 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         }
     }
     public void updateList(List<Product> newList) {
+        if (this.productList == null) {
+            this.productList = newList;
+            notifyItemRangeInserted(0, newList.size());
+            return;
+        }
+
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override public int getOldListSize() { return productList.size(); }
+            @Override public int getNewListSize() { return newList.size(); }
+
+            @Override
+            public boolean areItemsTheSame(int oldPos, int newPos) {
+                return productList.get(oldPos).getId() == newList.get(newPos).getId();
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldPos, int newPos) {
+                Product oldP = productList.get(oldPos);
+                Product newP = newList.get(newPos);
+                String oldImg = oldP.getImageUrl() != null ? oldP.getImageUrl().split("\\?")[0] : "";
+                String newImg = newP.getImageUrl() != null ? newP.getImageUrl().split("\\?")[0] : "";
+                return oldP.getName().equals(newP.getName())
+                        && oldP.getPrice() == newP.getPrice()
+                        && oldP.isFavorite() == newP.isFavorite()
+                        && oldImg.equals(newImg);
+            }
+        });
+
         this.productList = newList;
-        notifyDataSetChanged();
+        diffResult.dispatchUpdatesTo(this);
     }
     public void appendList(List<Product> newItems) {
         int startPos = this.productList.size();
