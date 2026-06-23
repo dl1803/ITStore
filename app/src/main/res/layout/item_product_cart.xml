@@ -110,7 +110,7 @@
                 android:textSize="12dp"></TextView>
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="10dp"
@@ -118,29 +118,33 @@
         android:gravity="center"
         app:layout_constraintLeft_toRightOf="@id/cv_item_product"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        >
 
-    <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:maxLines="3"
+                    android:text="1.152.000đ"
+                    android:textColor="@color/red_price"
+                    android:textSize="14dp"
+                    android:textStyle="bold"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    ></TextView>
 
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:maxLines="3"
-            android:text="1.152.000đ"
-            android:textColor="@color/red_price"
-            android:textSize="14dp"
-            android:textStyle="bold"></TextView>
-                </LinearLayout>
-
-                <LinearLayout
+            <LinearLayout
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:gravity="center_horizontal"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/tvPrice"
                     >
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="wrap_content"
@@ -185,7 +189,7 @@
                                 app:tint="@color/orange_primary"></ImageView>
                         </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
