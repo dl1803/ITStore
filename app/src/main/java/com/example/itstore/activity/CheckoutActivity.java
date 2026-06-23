@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.itstore.R;
+import com.example.itstore.adapter.AddressSelectionAdapter;
 import com.example.itstore.adapter.CheckoutAdapter;
 import com.example.itstore.adapter.DiscountAdapter;
 import com.example.itstore.api.RetrofitClient;
@@ -154,22 +155,20 @@ public class CheckoutActivity extends AppCompatActivity {
             return;
         }
 
-        String[] addressStrings = new String[addressList.size()];
-        for (int i = 0; i < addressList.size(); i++) {
-            Address addr = addressList.get(i);
-            addressStrings[i] = addr.getRecipient() + " | " + addr.getPhoneNumber() + "\n"
-                    + addr.getStreet() + ", " + addr.getWard() + ", " + addr.getDistrict() + ", " + addr.getProvince();
-        }
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_address_list, null);
+        bottomSheetDialog.setContentView(dialogView);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Chọn địa chỉ nhận hàng");
+        RecyclerView rvAddressSelection = dialogView.findViewById(R.id.rvAddressSelection);
+        rvAddressSelection.setLayoutManager(new LinearLayoutManager(this));
 
-        builder.setItems(addressStrings, (dialog, which) -> {
-            Address selectedAddress = addressList.get(which);
-
-            updateAddressUI(selectedAddress);
+        AddressSelectionAdapter adapter = new AddressSelectionAdapter(addressList, address -> {
+           updateAddressUI(address);
+           bottomSheetDialog.dismiss();
         });
-        builder.show();
+        rvAddressSelection.setAdapter(adapter);
+        bottomSheetDialog.show();
+
     }
 
     // TÍNH NĂNG 2: MỞ BOTTOM SHEET CHỌN VOUCHER

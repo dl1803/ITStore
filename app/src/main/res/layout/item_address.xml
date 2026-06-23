@@ -35,7 +35,6 @@
             android:text="  |  "
             android:textColor="#CCCCCC"
             android:textSize="14sp"
-            app:layout_constraintLeft_toRightOf="@id/tvEdit"
             app:layout_constraintRight_toLeftOf="@id/tvDelete"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -58,7 +57,7 @@
             android:textColor="@color/orange_primary"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constraintRight_toLeftOf="@id/tvEdit"
+            app:layout_constraintRight_toLeftOf="@id/tvDivider"
             app:layout_constraintTop_toTopOf="parent" ></TextView>
 
         <TextView
