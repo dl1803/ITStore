@@ -1,7 +1,6 @@
 package com.example.itstore.viewmodel;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -9,23 +8,17 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+
 import java.util.ArrayList;
 import java.util.List;
-import com.example.itstore.R;
-import com.example.itstore.api.RetrofitClient;
+
 import com.example.itstore.model.Banner;
 import com.example.itstore.model.BannerResponse;
-import com.example.itstore.model.Brand;
-import com.example.itstore.model.BrandResponse;
 import com.example.itstore.model.Category;
 import com.example.itstore.model.CategoryResponse;
-import com.example.itstore.model.MockDataRepository;
 import com.example.itstore.model.Pagination;
 import com.example.itstore.model.Product;
-import com.example.itstore.model.ProductImage;
 import com.example.itstore.model.ProductResponse;
-import com.example.itstore.model.ProductVariant;
 import com.example.itstore.repository.ProductRepository;
 
 import retrofit2.Call;

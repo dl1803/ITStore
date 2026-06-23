@@ -21,6 +21,9 @@ public class FilterProductDialog extends BottomSheetDialogFragment {
     private OnFilterAppliedListener listener;
     private BrandFilterAdapter brandAdapter;
     private List<Brand> brandList = new ArrayList<>();
+    private double previousMinPrice = 0;
+    private double previousMaxPrice = Double.MAX_VALUE;
+    private List<Integer> previousBrandIds = new ArrayList<>();
     public interface OnFilterAppliedListener {
         void onFilterApplied(double minPrice, double maxPrice, List<Integer> selectedBrandIds);
     }
@@ -30,6 +33,13 @@ public class FilterProductDialog extends BottomSheetDialogFragment {
     public void setBrandList(List<Brand> brands) {
         if (brands != null) {
             this.brandList = brands;
+        }
+    }
+    public void setPreviousSelection(double minPrice, double maxPrice, List<Integer> brandIds) {
+        this.previousMinPrice = minPrice;
+        this.previousMaxPrice = maxPrice;
+        if (brandIds != null) {
+            this.previousBrandIds = new ArrayList<>(brandIds);
         }
     }
     @Nullable
@@ -43,6 +53,15 @@ public class FilterProductDialog extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         brandAdapter = new BrandFilterAdapter(brandList, selectedIds -> {});
         binding.rvFilterBrand.setAdapter(brandAdapter);
+        if (previousMinPrice > 0) {
+            binding.edtMinPrice.setText(String.valueOf((int) previousMinPrice));
+        }
+        if (previousMaxPrice < Double.MAX_VALUE) {
+            binding.edtMaxPrice.setText(String.valueOf((int) previousMaxPrice));
+        }
+        if (!previousBrandIds.isEmpty()) {
+            brandAdapter.setSelectedBrandIds(previousBrandIds);
+        }
         binding.btnApplyFilter.setOnClickListener(v -> {
             String minStr = binding.edtMinPrice.getText().toString().trim();
             String maxStr = binding.edtMaxPrice.getText().toString().trim();

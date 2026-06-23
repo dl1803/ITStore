@@ -18,13 +18,10 @@ import com.example.itstore.databinding.ActivityProductDetailBinding;
 import com.example.itstore.adapter.ImagePagerAdapter;
 import com.example.itstore.fragment.SpecsBottomSheet;
 import com.example.itstore.model.CartItem;
-import com.example.itstore.model.MockDataRepository;
 import com.example.itstore.model.Product;
 import com.example.itstore.model.ProductImage;
 import com.example.itstore.model.ProductReviewsResponse;
 import com.example.itstore.model.ProductVariant;
-import com.example.itstore.model.Review;
-import com.example.itstore.model.SingleProductResponse;
 import com.example.itstore.model.Specification;
 import com.example.itstore.utils.CartManager;
 import com.example.itstore.utils.SharedPrefsManager;
@@ -33,9 +30,6 @@ import com.example.itstore.viewmodel.WishlistViewModel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 

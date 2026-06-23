@@ -95,7 +95,22 @@ public class BrandFilterAdapter extends RecyclerView.Adapter<BrandFilterAdapter.
         selectedPositions.add(0);
         notifyDataSetChanged();
     }
-
+    public void setSelectedBrandIds(List<Integer> brandIds) {
+        selectedPositions.clear();
+        if (brandIds == null || brandIds.isEmpty()) {
+            selectedPositions.add(0);
+        } else {
+            for (int i = 0; i < brandList.size(); i++) {
+                if (brandIds.contains(brandList.get(i).getId())) {
+                    selectedPositions.add(i);
+                }
+            }
+            if (selectedPositions.isEmpty()) {
+                selectedPositions.add(0);
+            }
+        }
+        notifyDataSetChanged();
+    }
     static class BrandViewHolder extends RecyclerView.ViewHolder {
         TextView tvBrand;
         public BrandViewHolder(@NonNull View itemView) {

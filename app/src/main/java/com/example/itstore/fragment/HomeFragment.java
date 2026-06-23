@@ -28,14 +28,10 @@ import com.example.itstore.R;
 import com.example.itstore.activity.LoginActivity;
 import com.example.itstore.activity.ProductDetailActivity;
 import com.example.itstore.adapter.BannerAdapter;
-import com.example.itstore.adapter.BrandFilterAdapter;
 import com.example.itstore.adapter.CategoryAdapter;
 import com.example.itstore.adapter.ProductAdapter;
-import com.example.itstore.api.RetrofitClient;
 import com.example.itstore.databinding.FragmentHomeBinding;
 import com.example.itstore.model.Category;
-import com.example.itstore.model.CategoryResponse;
-import com.example.itstore.model.MockDataRepository;
 import com.example.itstore.model.Product;
 import com.example.itstore.utils.SharedPrefsManager;
 import com.example.itstore.viewmodel.HomeViewModel;
@@ -45,10 +41,6 @@ import com.example.itstore.viewmodel.WishlistViewModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
