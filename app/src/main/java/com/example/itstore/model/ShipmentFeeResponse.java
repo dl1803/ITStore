@@ -14,8 +14,8 @@ public class ShipmentFeeResponse {
 
     public static class FeeData {
         @SerializedName("shipping_fee")
-        private long shippingFee;
+        private double shippingFee;
 
-        public long getShippingFee() { return shippingFee; }
+        public long getShippingFee() { return (long) shippingFee; }
     }
 }
