@@ -37,6 +37,9 @@ public class OrderHistoryViewModel extends AndroidViewModel {
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
     public void fetchOrderHistory() {
+        if (Boolean.TRUE.equals(isLoading.getValue())) {
+            return;
+        }
         isLoading.setValue(true);
         repository.getOrderHistory(new Callback<OrderHistoryResponse>() {
             @Override
@@ -46,6 +49,7 @@ public class OrderHistoryViewModel extends AndroidViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     if (response.body().isSuccess()) {
                         orderList.setValue(response.body().getData());
+                        errorMessage.setValue(null); // có data mới rồi thì xóa lỗi cũ, tránh hiểu lầm
                     } else {
                         errorMessage.setValue("Lỗi từ server: Không lấy được danh sách");
                     }
