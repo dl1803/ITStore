@@ -143,7 +143,7 @@ public class CategoryProductFragment extends Fragment {
     private void openFilterDialog() {
         FilterProductDialog dialog = new FilterProductDialog();
         dialog.setBrandList(fetchedBrands);
-
+        dialog.setPreviousSelection(currentMinPrice, currentMaxPrice, currentBrandIds);
         dialog.setOnFilterAppliedListener((min, max, brandIds) -> {
             this.currentMinPrice = min;
             this.currentMaxPrice = max;

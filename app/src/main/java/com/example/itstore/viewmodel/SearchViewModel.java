@@ -1,23 +1,20 @@
 package com.example.itstore.viewmodel;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.example.itstore.api.RetrofitClient;
 import com.example.itstore.model.Brand;
 import com.example.itstore.model.BrandResponse;
 import com.example.itstore.model.Category;
-import com.example.itstore.model.MockDataRepository;
 import com.example.itstore.model.Pagination;
 import com.example.itstore.model.Product;
 import com.example.itstore.model.ProductResponse;
+import com.example.itstore.model.WishlistMessageResponse;
 import com.example.itstore.repository.ProductRepository;
 
 import java.util.ArrayList;
@@ -27,6 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import com.example.itstore.repository.SearchHistoryRepository;
+import com.example.itstore.repository.WishlistRepository;
 
 public class SearchViewModel extends AndroidViewModel {
     private final ProductRepository productRepository;
@@ -34,6 +32,7 @@ public class SearchViewModel extends AndroidViewModel {
     public LiveData<List<Product>> searchResults = _searchResults;
     private List<Product> allProducts;
     private List<Category> allCategories;
+    private final WishlistRepository wishlistRepository;
     private MutableLiveData<List<Brand>> listBrandsLiveData = new MutableLiveData<>();
     private final SearchHistoryRepository historyRepository;
     private final MutableLiveData<List<String>> searchHistoryLiveData = new MutableLiveData<>();
@@ -50,6 +49,7 @@ public class SearchViewModel extends AndroidViewModel {
         super(application);
         productRepository = ProductRepository.getInstance(application);
         historyRepository = SearchHistoryRepository.getInstance(application);
+        wishlistRepository = WishlistRepository.getInstance(application);
         searchHistoryLiveData.setValue(historyRepository.getHistory());
     }
     public void searchProducts(String query, int categoryId, double minPrice, double maxPrice, List<Integer> brandIds, int page, boolean isLoadMore) {
@@ -121,5 +121,44 @@ public class SearchViewModel extends AndroidViewModel {
     public void clearHistory() {
         historyRepository.clearAll();
         searchHistoryLiveData.setValue(historyRepository.getHistory());
+    }
+    public interface FavoriteToggleCallback {
+        void onSuccess(boolean isNowFavorite);
+        void onError(String message);
+    }
+    public void toggleFavorite(Product product, FavoriteToggleCallback callback) {
+        if (product.isFavorite()) {
+            wishlistRepository.removeFromWishlist(product.getId(), new Callback<WishlistMessageResponse>() {
+                @Override
+                public void onResponse(Call<WishlistMessageResponse> call, Response<WishlistMessageResponse> response) {
+                    if (response.isSuccessful()) {
+                        WishlistRepository.removeFromCache(product.getId());
+                        callback.onSuccess(false);
+                    } else {
+                        callback.onError("Lỗi: Không thể xóa khỏi yêu thích!");
+                    }
+                }
+                @Override
+                public void onFailure(Call<WishlistMessageResponse> call, Throwable t) {
+                    callback.onError("Lỗi mạng: " + t.getMessage());
+                }
+            });
+        } else {
+            wishlistRepository.addToWishlist(product.getId(), new Callback<WishlistMessageResponse>() {
+                @Override
+                public void onResponse(Call<WishlistMessageResponse> call, Response<WishlistMessageResponse> response) {
+                    if (response.isSuccessful()) {
+                        WishlistRepository.addToCache(product.getId());
+                        callback.onSuccess(true);
+                    } else {
+                        callback.onError("Lỗi: Không thể thêm vào yêu thích!");
+                    }
+                }
+                @Override
+                public void onFailure(Call<WishlistMessageResponse> call, Throwable t) {
+                    callback.onError("Lỗi mạng: " + t.getMessage());
+                }
+            });
+        }
     }
 }

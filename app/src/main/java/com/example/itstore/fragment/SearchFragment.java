@@ -12,8 +12,6 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +26,6 @@ import com.example.itstore.databinding.FragmentSearchBinding;
 import com.example.itstore.dialog.FilterProductDialog;
 import com.example.itstore.model.Brand;
 import com.example.itstore.model.Category;
-import com.example.itstore.model.MockDataRepository;
 import com.example.itstore.model.Product;
 import com.example.itstore.utils.SharedPrefsManager;
 import com.example.itstore.viewmodel.HomeViewModel;
@@ -87,11 +84,19 @@ public class SearchFragment extends Fragment {
                     Toast.makeText(requireContext(), "Vui lòng đăng nhập để lưu yêu thích!", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(requireContext(), LoginActivity.class));
                 } else {
-                    boolean newStatus = !product.isFavorite();
-                    product.setFavorite(newStatus);
-                    MockDataRepository.getInstance().updateProduct(product);
-                    productAdapter.notifyItemChanged(position);
-                    Toast.makeText(requireContext(), newStatus ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích", Toast.LENGTH_SHORT).show();
+                    viewModel.toggleFavorite(product, new SearchViewModel.FavoriteToggleCallback() {
+                        @Override
+                        public void onSuccess(boolean isNowFavorite) {
+                            product.setFavorite(isNowFavorite);
+                            productAdapter.notifyItemChanged(position);
+                            Toast.makeText(requireContext(), isNowFavorite ? "Đã thêm vào yêu thích" : "Đã xóa khỏi yêu thích", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
 
@@ -239,6 +244,7 @@ public class SearchFragment extends Fragment {
         binding.btnOpenFilter.setOnClickListener(v -> {
             FilterProductDialog dialog = new FilterProductDialog();
             dialog.setBrandList(fetchedBrands);
+            dialog.setPreviousSelection(currentMinPrice, currentMaxPrice, currentBrandIds);
             dialog.setOnFilterAppliedListener((min, max, brandIds) -> {
                 currentMinPrice = min;
                 currentMaxPrice = max;

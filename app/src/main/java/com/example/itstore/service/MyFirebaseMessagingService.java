@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.itstore.R;
 import com.example.itstore.activity.NotificationActivity;
+import com.example.itstore.model.LoginResponse;
 import com.example.itstore.utils.SharedPrefsManager;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -37,8 +38,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 body = remoteMessage.getNotification().getBody();
         }
 
+        Map<String, String> data = remoteMessage.getData();
         if (remoteMessage.getData().size() > 0) {
-            Map<String, String> data = remoteMessage.getData();
             if (data.containsKey("notification")) {
                 String jsonString = data.get("notification");
                 try {
@@ -71,6 +72,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d("FCM_SERVICE", "User đã đăng xuất, từ chối hiển thị thông báo cũ!");
             return;
         }
+
+//        int userIdInSession = SharedPrefsManager.getInstance(getApplicationContext()).getUserId();
+//        if (data.get("user_id").equals(String.valueOf(userIdInSession))){
+//            return;
+//        }
 
         SharedPreferences prefs = getSharedPreferences("NotificationPrefs", Context.MODE_PRIVATE);
         if (notiType != null) {
