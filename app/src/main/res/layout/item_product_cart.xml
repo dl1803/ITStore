@@ -123,7 +123,7 @@
 
                 <TextView
                     android:id="@+id/tvPrice"
-                    android:layout_width100dp"
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:maxLines="3"
