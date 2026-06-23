@@ -88,6 +88,7 @@ public class WishlistViewModel extends AndroidViewModel {
                     wishlistProductIds.setValue(new HashSet<>(WishlistRepository.getCachedProductIds()));
                     wishlistItems.setValue(WishlistRepository.getCachedItems());
                     toastMessage.setValue("Đã xóa khỏi yêu thích");
+                    WishlistRepository.markNeedRefresh();
                 } else {
                     toastMessage.setValue("Không thể xóa khỏi yêu thích");
                 }
