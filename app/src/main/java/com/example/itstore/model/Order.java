@@ -33,6 +33,12 @@ public class Order implements Serializable {
     @SerializedName("discount_amount")
     private double discount;
 
+    @SerializedName("payment_method")
+    private String paymentMethod;
+
+    @SerializedName("payment_status")
+    private String paymentStatus;
+
     public static class AddressInfo implements Serializable {
         @SerializedName("recipient")
         public String recipient;
@@ -150,6 +156,14 @@ public class Order implements Serializable {
 
     public long getDiscount() {
         return (long) discount;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
     }
 
     public String getStatusVN() {
