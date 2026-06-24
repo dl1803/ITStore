@@ -66,6 +66,12 @@ public class RefundItemAdapter extends RecyclerView.Adapter<RefundItemAdapter.Vi
         holder.binding.tvPrice.setText(String.format(java.util.Locale.US, "%,.0f đ", item.getPrice()));
         holder.binding.tvQuantity.setText(String.valueOf(quantityMap.get(key)));
 
+        com.bumptech.glide.Glide.with(holder.itemView.getContext())
+                .load(item.getImageUrl())
+                .placeholder(com.example.itstore.R.drawable.ic_search)
+                .error(com.example.itstore.R.drawable.ic_search)
+                .into(holder.binding.imgProduct);
+
         holder.binding.cbAgreeBuy.setOnCheckedChangeListener(null);
         holder.binding.cbAgreeBuy.setChecked(checkedMap.get(key));
 
