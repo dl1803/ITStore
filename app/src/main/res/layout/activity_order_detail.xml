@@ -194,6 +194,24 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="Tình trạng thanh toán"
+                        android:textColor="#555" ></TextView>
+                    <TextView
+                        android:id="@+id/tvPaymentStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="..."
+                        android:textColor="@color/black"
+                        android:gravity="end"></TextView>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Tổng tiền hàng"
                         android:textColor="#555" ></TextView>
                     <TextView
@@ -257,6 +275,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        android:id="@+id/tvPaymentMethodLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Thành tiền"

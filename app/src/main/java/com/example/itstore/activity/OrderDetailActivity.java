@@ -177,6 +177,27 @@ public class OrderDetailActivity extends AppCompatActivity {
         } else {
             binding.layoutVoucher.setVisibility(View.GONE);
         }
+
+        String method = currentOrder.getPaymentMethod();
+        if (method != null && method.equals("bank_transfer")){
+            binding.tvPaymentMethodLabel.setText("Banking");
+            binding.tvPaymentMethodLabel.setTextColor(Color.parseColor("#4CAF50")); // Xanh lá
+        } else {
+            binding.tvPaymentMethodLabel.setText("COD");
+            binding.tvPaymentMethodLabel.setTextColor(Color.parseColor("#FF8C00")); // Cam đậm
+        }
+
+        String pStatus = currentOrder.getPaymentStatus();
+        if (pStatus != null && pStatus.equals("paid")) {
+            binding.tvPaymentStatus.setText("Đã thanh toán");
+            binding.tvPaymentStatus.setTextColor(Color.parseColor("#4CAF50")); // Xanh lá
+        } else if (pStatus != null && pStatus.equals("refunded")) {
+            binding.tvPaymentStatus.setText("Đã hoàn tiền");
+            binding.tvPaymentStatus.setTextColor(Color.parseColor("#2196F3")); // Xanh dương
+        } else {
+            binding.tvPaymentStatus.setText("Chưa thanh toán");
+            binding.tvPaymentStatus.setTextColor(Color.parseColor("#FF3B30")); // Đỏ
+        }
     }
 
     private void updateBottomButtons() {
