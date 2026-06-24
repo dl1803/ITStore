@@ -80,7 +80,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         holder.tvQuantity.setText("x" + order.getQuantity());
 
         DecimalFormat formatter = new DecimalFormat("###,###,###");
-        holder.tvTotalPrice.setText("Thành tiền: " + formatter.format(order.getTotalPrice() + 30000) + "đ");
+        holder.tvTotalPrice.setText("Thành tiền: " + formatter.format(order.getTotalPrice()) + "đ");
         Glide.with(holder.itemView.getContext())
                 .load(order.getImageUrl())
                 .placeholder(R.drawable.ic_search)
