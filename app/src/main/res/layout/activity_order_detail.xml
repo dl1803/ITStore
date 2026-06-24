@@ -102,6 +102,7 @@
                         android:textSize="14sp" />
 
                     <ImageView
+                        android:id="@+id/imgViewTimeline"
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:src="@drawable/ic_arrow_forward"
