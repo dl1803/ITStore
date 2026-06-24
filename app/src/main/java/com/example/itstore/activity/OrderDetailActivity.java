@@ -236,6 +236,8 @@ public class OrderDetailActivity extends AppCompatActivity {
             showCancelReasonDialog();
         });
         binding.tvViewTimeline.setOnClickListener(v -> showTimelineDialog());
+        binding.imgViewTimeline.setOnClickListener(v -> showTimelineDialog());
+
         binding.btnConfirmReceived.setOnClickListener(v -> {
             int orderId = Integer.parseInt(currentOrder.getOrderId());
             viewModel.confirmReceived(orderId);
