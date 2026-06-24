@@ -136,11 +136,7 @@ public class CartFragment extends Fragment {
         cartViewModel.getCartItems().observe(getViewLifecycleOwner(), items -> {
             if (items != null) {
                 cartAdapter.setCartList(items);
-                int selectedCount = 0;
-                for (CartItem item : items) {
-                    if (item.isSelected()) selectedCount++;
-                }
-                binding.btnCheckout.setText("Mua hàng (" + selectedCount + ")");
+                binding.btnCheckout.setText("Mua hàng");
             }
         });
 
