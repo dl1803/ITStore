@@ -418,6 +418,10 @@ public class ProductDetailActivity extends AppCompatActivity {
         binding.tvPriceNew.setText(String.format(Locale.US, "%,.0f VNĐ", newPrice));
         binding.tvPriceOld.setText(String.format(Locale.US, "%,.0f VNĐ", oldPrice));
         int percent = (int)((oldPrice - newPrice) * 100 / oldPrice);
-        binding.tvDiscountTag.setText(percent + "%");
+        if (percent > 0) {
+            binding.tvDiscountTag.setText("-" + percent + "%");
+        } else {
+            binding.tvDiscountTag.setText(-percent + "%");
+        }
     }
 }

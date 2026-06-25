@@ -27,8 +27,13 @@ import com.example.itstore.model.ProductImage;
 import com.example.itstore.model.ProductVariant;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import com.example.itstore.viewmodel.OrderDetailViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -326,26 +331,16 @@ public class OrderDetailActivity extends AppCompatActivity {
         dialog.setContentView(dialogBinding.getRoot());
 
         List<OrderTimeline> realTimelines = new ArrayList<>();
-
         List<Order.TimelineItem> apiTimelineList = currentOrder.getTimelineList();
 
         if (apiTimelineList != null && !apiTimelineList.isEmpty()) {
             for (Order.TimelineItem item : apiTimelineList) {
-
                 String statusTitle = getTimelineStatusVN(item.newStatus);
-
-                String timeFormatted = item.changedAt;
-                if (timeFormatted != null && timeFormatted.contains("T")) {
-                    timeFormatted = timeFormatted.substring(0, 16).replace("T", " ");
-                }
-
                 String description = (item.note != null && !item.note.isEmpty())
                         ? item.note
                         : getDefaultTimelineDescription(item.newStatus);
-
-                String content = description + "\n" + timeFormatted;
-
-                // Thêm vào đầu mảng (add 0) để sự kiện mới nhất nổi lên trên cùng
+                String timeToDisplay = formatRawTime(item.changedAt);
+                String content = description + "\n" + timeToDisplay;
                 realTimelines.add(0, new OrderTimeline(statusTitle, content));
             }
         } else {
@@ -356,6 +351,37 @@ public class OrderDetailActivity extends AppCompatActivity {
         dialogBinding.rvOrderTimeline.setLayoutManager(new LinearLayoutManager(this));
         dialogBinding.rvOrderTimeline.setAdapter(adapter);
         dialog.show();
+    }
+    private String formatRawTime(String raw) {
+        if (raw == null || raw.isEmpty()) return "";
+
+        try {
+            SimpleDateFormat apiFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+            apiFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = apiFormat.parse(raw);
+            SimpleDateFormat displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+            displayFormat.setTimeZone(TimeZone.getDefault());
+
+            if (date != null) {
+                return displayFormat.format(date);
+            }
+        } catch (Exception e) {
+            try {
+                SimpleDateFormat apiFormatShort = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
+                apiFormatShort.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Date date = apiFormatShort.parse(raw);
+
+                SimpleDateFormat displayFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                displayFormat.setTimeZone(TimeZone.getDefault());
+
+                if (date != null) return displayFormat.format(date);
+            } catch (Exception ex) {
+                if (raw.contains("T")) {
+                    return raw.substring(0, 16).replace("T", " ");
+                }
+            }
+        }
+        return raw;
     }
 
     private String getTimelineStatusVN(String rawStatus) {
