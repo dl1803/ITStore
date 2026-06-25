@@ -87,6 +87,11 @@ public class LoginActivity extends AppCompatActivity {
                 googleSignInLauncher.launch(signInIntent);
             });
         });
+
+        binding.tvGuest.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
     }
 
     private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
