@@ -93,7 +93,10 @@ public class ProductDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Sản phẩm không có dữ liệu chi tiết!", Toast.LENGTH_SHORT).show();
         }
 
-        wishlistViewModel.loadWishlistIfNeeded();
+        String token = SharedPrefsManager.getInstance(this).getAccessToken();
+        if (token != null && !token.isEmpty()) {
+            wishlistViewModel.loadWishlistIfNeeded();
+        }
 
         wishlistViewModel.getWishlistProductIds().observe(this, productIds -> {
             updateFavoriteIcon(productIds.contains(currentProduct.getId()));
@@ -117,8 +120,8 @@ public class ProductDetailActivity extends AppCompatActivity {
                 Toast.makeText(this, "Đang tải dữ liệu từ Server...", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String token = SharedPrefsManager.getInstance(this).getAccessToken();
-            if (token == null || token.isEmpty()) {
+            String cartToken = SharedPrefsManager.getInstance(this).getAccessToken();
+            if (cartToken == null || cartToken.isEmpty()) {
                 Toast.makeText(this, "Vui lòng đăng nhập để thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
                 Intent intentLogin = new Intent(this, LoginActivity.class);
                 startActivity(intentLogin);
@@ -154,8 +157,8 @@ public class ProductDetailActivity extends AppCompatActivity {
 
 
         binding.imgFavoriteItem.setOnClickListener(v -> {
-            String token = SharedPrefsManager.getInstance(this).getAccessToken();
-            if (token == null || token.isEmpty()) {
+            String token2 = SharedPrefsManager.getInstance(this).getAccessToken();
+            if (token2 == null || token2.isEmpty()) {
                 Toast.makeText(this, "Vui lòng đăng nhập để lưu sản phẩm yêu thích!", Toast.LENGTH_SHORT).show();
                 Intent intentLogin = new Intent(this, LoginActivity.class);
                 startActivity(intentLogin);
@@ -366,8 +369,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                     int totalReviews = 0;
                     if (reviewResponse.getSummary() != null) {
                         totalReviews = reviewResponse.getSummary().getTotalReviews();
+                        binding.tvRatingScore.setText(String.valueOf(reviewResponse.getSummary().getAvgRating()));
+                    } else {
+                        binding.tvRatingScore.setText("0.0");
                     }
-                    binding.tvRatingScore.setText(String.valueOf(reviewResponse.getSummary().getAvgRating()));
                     binding.tvSeeAllReviews.setText("Xem tất cả (" + totalReviews + ") >");
                     binding.tvRatingCount.setText(totalReviews + " bài đánh giá");
 
