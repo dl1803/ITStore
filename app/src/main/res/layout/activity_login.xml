@@ -150,6 +150,7 @@
         ></com.google.android.material.button.MaterialButton>
 
     <LinearLayout
+        android:id="@+id/layoutRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -172,6 +173,24 @@
             android:text="Đăng ký ngay"
             android:textColor="@color/orange_primary"
             android:textStyle="bold" ></TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/layoutGuest"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toBottomOf="@id/layoutRegister"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content">
+        <TextView
+            android:id="@+id/tvGuest"
+            android:text="Tiếp tục với tư cách Khách"
+            android:textColor="@color/orange_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ></TextView>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
