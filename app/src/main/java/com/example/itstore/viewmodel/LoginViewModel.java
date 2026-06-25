@@ -163,6 +163,10 @@ public class LoginViewModel extends AndroidViewModel {
                     loginSuccessData.setValue(response.body());
                 } else {
                     apiError.setValue("Xác thực Google thất bại. Vui lòng thử lại!");
+//                    try {
+//                        String errorStr = response.errorBody() != null ? response.errorBody().string() : "Lỗi không xác định";
+//                        android.util.Log.e("DEBUG_GG", "Server trả về lỗi: " + errorStr);
+//                    } catch (Exception e) {}
                 }
             }
 

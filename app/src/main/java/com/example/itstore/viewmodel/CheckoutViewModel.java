@@ -73,8 +73,7 @@ public class CheckoutViewModel extends AndroidViewModel {
 
     private void calculateMoney(List<CartItem> items) {
         double subtotal = 0;
-        double discount = totalDiscount.getValue() != null ? totalDiscount.getValue() : 0;
-
+        double requestedDiscount = totalDiscount.getValue() != null ? totalDiscount.getValue() : 0;
         if (items != null) {
             for (CartItem item : items) {
                 subtotal += (item.getPrice() * item.getQuantity());
@@ -82,11 +81,14 @@ public class CheckoutViewModel extends AndroidViewModel {
         }
 
         double ship = shippingFee.getValue() != null ? shippingFee.getValue() : 0;
-        double finalPrice = subtotal + ship - discount;
+        double actualDiscount = Math.min(requestedDiscount, subtotal);
+
+        double finalPrice = (subtotal - actualDiscount) + ship;
+
         if(finalPrice < 0) finalPrice = 0;
 
         subtotalPrice.setValue(subtotal);
-        totalDiscount.setValue(discount);
+        totalDiscount.setValue(actualDiscount);
         finalTotalPrice.setValue(finalPrice);
     }
 

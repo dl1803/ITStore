@@ -101,11 +101,14 @@ public class LoginActivity extends AppCompatActivity {
                         String idToken = account.getIdToken();
 
                         if (idToken != null) {
+                            android.util.Log.d("DEBUG_GG_TOKEN", "Token: " + idToken);
                             loginViewModel.googleLogin(idToken);
                         }
                     }
                     catch (ApiException e) {
                         Toast.makeText(this, "Xác thực Google thất bại. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+//                      Log.e("DEBUG_GG", "Lỗi Google Sign In: " + e.getStatusCode());
+//                      Toast.makeText(this, "Mã lỗi GG: " + e.getStatusCode(), Toast.LENGTH_LONG).show();
                     }
                 }
             }
