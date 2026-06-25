@@ -82,6 +82,7 @@ public class ProfileFragment extends Fragment {
         String token = SharedPrefsManager.getInstance(requireContext()).getAccessToken();
 
         if (token == null || token.isEmpty()) {
+            binding.tvNotificationBadge.setVisibility(View.GONE);
             binding.tvNameUser.setText("Xin chào, Khách!");
             binding.tvEmailUser.setText("Vui lòng đăng nhập để xem hồ sơ");
             binding.tvPhoneUser.setText("");
@@ -95,6 +96,11 @@ public class ProfileFragment extends Fragment {
             binding.tvEditProfile.setOnClickListener(v -> {
                 Toast.makeText(requireContext(), "Bạn cần đăng nhập để sử dụng tính năng này!", Toast.LENGTH_SHORT).show();
 
+                Intent intent = new Intent(requireContext(), LoginActivity.class);
+                startActivity(intent);
+            });
+            binding.btnNotification.setOnClickListener(v -> {
+                Toast.makeText(requireContext(), "Bạn cần đăng nhập để xem thông báo!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(requireContext(), LoginActivity.class);
                 startActivity(intent);
             });

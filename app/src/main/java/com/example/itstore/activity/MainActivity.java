@@ -32,6 +32,7 @@ import com.example.itstore.api.RetrofitClient;
 import com.example.itstore.databinding.ActivityMainBinding;
 import com.example.itstore.model.NotificationResponse;
 import com.example.itstore.model.TokenRegistrationRequest;
+import com.example.itstore.utils.SharedPrefsManager;
 import com.example.itstore.viewmodel.HomeViewModel;
 import com.example.itstore.viewmodel.NotificationViewModel;
 import com.google.firebase.FirebaseApp;
@@ -185,11 +186,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void registerNotificationToken() {
+        String accessToken = SharedPrefsManager.getInstance(this).getAccessToken();
+        if (accessToken == null || accessToken.isEmpty()) {
+            return;
+        }
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) return;
-                    String token = task.getResult();
-                    notificationViewModel.registerFCMToken(token);
-                });
+            if (!task.isSuccessful()) {
+                Log.w("FCM_TOKEN", "Fetching FCM registration token failed", task.getException());
+                return;
+            }
+            String token = task.getResult();
+            notificationViewModel.registerFCMToken(token);
+        });
     }
 
 }

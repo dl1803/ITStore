@@ -307,7 +307,10 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        wishlistViewModel.loadWishlistIfNeeded();
+        String token = SharedPrefsManager.getInstance(requireContext()).getAccessToken();
+        if (token != null && !token.isEmpty()) {
+            wishlistViewModel.loadWishlistIfNeeded();
+        }
     }
     @Override
     public void onDestroyView() {

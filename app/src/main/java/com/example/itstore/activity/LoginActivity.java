@@ -91,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         binding.tvGuest.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
         });
     }
 
