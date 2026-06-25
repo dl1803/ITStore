@@ -358,7 +358,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         RetrofitClient.getApiService(this).getProductReviews(productId, 1, 3).enqueue(new Callback<ProductReviewsResponse>() {
             @Override
-            public void onResponse(Call<com.example.itstore.model.ProductReviewsResponse> call, Response<ProductReviewsResponse> response) {
+            public void onResponse(Call<ProductReviewsResponse> call, Response<ProductReviewsResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ProductReviewsResponse reviewResponse = response.body();
                     List<ProductReviewsResponse.ReviewDetail> serverReviews = reviewResponse.getData();
@@ -367,7 +367,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     if (reviewResponse.getSummary() != null) {
                         totalReviews = reviewResponse.getSummary().getTotalReviews();
                     }
-
+                    binding.tvRatingScore.setText(String.valueOf(reviewResponse.getSummary().getAvgRating()));
                     binding.tvSeeAllReviews.setText("Xem tất cả (" + totalReviews + ") >");
                     binding.tvRatingCount.setText(totalReviews + " bài đánh giá");
 
