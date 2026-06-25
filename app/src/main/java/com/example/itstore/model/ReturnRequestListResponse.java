@@ -99,7 +99,7 @@ public class ReturnRequestListResponse {
                 case "approved": return "Đã chấp nhận";
                 case "rejected": return "Đã từ chối";
                 case "received": return "Đã nhận hàng trả";
-                case "complete": return "Hoàn tất";
+                case "completed": return "Hoàn tất";
                 default: return "Chờ xử lý";
             }
         }
@@ -111,7 +111,7 @@ public class ReturnRequestListResponse {
                 case "approved": return android.graphics.Color.parseColor("#2196F3");
                 case "rejected": return android.graphics.Color.parseColor("#FF3B30");
                 case "received": return android.graphics.Color.parseColor("#8E24AA");
-                case "complete": return android.graphics.Color.parseColor("#4CAF50");
+                case "completed": return android.graphics.Color.parseColor("#4CAF50");
                 default: return android.graphics.Color.parseColor("#F57C00");
             }
         }
