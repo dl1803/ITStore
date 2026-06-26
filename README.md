@@ -59,7 +59,7 @@ Không chỉ là một ứng dụng bán hàng thông thường, IT Store đư�
 
 1. Sao chép mã nguồn dự án về máy tính:
    ```bash
-   git clone [https://github.com/dl1803/ITStore_SE114.git](https://github.com/dl1803/ITStore_SE114.git)
+   git clone [https://github.com/dl1803/ITStore_SE114.git]
 2. Mở ứng dụng Android Studio.
 
 3. Chọn mở dự án và trỏ vào thư mục ITStore_SE114.
@@ -68,7 +68,7 @@ Không chỉ là một ứng dụng bán hàng thông thường, IT Store đư�
 
 5. Bật máy ảo Android và nhấn nút Run để trải nghiệm.
 
-(Lưu ý: Để hệ thống nhận diện đúng máy chủ, cần cấu hình Server, file và biến môi trường theo tài liệu gốc của dự án : https://docs.google.com/document/d/1dR1SsGB8Iydi9Ld0PMBkyzAwQlndiXRogRu_8v9ByAE/edit?tab=t.0).
+(Lưu ý: Để hệ thống nhận diện đúng máy chủ, cần cấu hình Server, file và biến môi trường theo tài liệu gốc của dự án : [https://docs.google.com/document/d/1dR1SsGB8Iydi9Ld0PMBkyzAwQlndiXRogRu_8v9ByAE/edit?tab=t.0](https://docs.google.com/document/d/14LwXF1cqkqHhKIlP5fcL5FoFt5sQLWRhth7YUEY-oLk/edit?tab=t.0)).
 
 👥 Đội Ngũ Phát Triển (Team Members)
 Dự án được lên ý tưởng, thiết kế kiến trúc và lập trình hoàn thiện bởi 4 sinh viên đến từ Trường Đại học Công nghệ Thông tin – ĐHQG TP.HCM:
