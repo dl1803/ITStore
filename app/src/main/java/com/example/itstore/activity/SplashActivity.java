@@ -19,6 +19,8 @@ import com.example.itstore.utils.SharedPrefsManager;
 public class SplashActivity extends AppCompatActivity {
 
     private ActivitySplashBinding binding;
+    private Handler handler = new Handler(Looper.getMainLooper());
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,24 +30,21 @@ public class SplashActivity extends AppCompatActivity {
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Chuyển tới trang Đăng nhập sau 2s
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+        // Chuyển tới Trang chủ sau 2s
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String savedToken = SharedPrefsManager.getInstance(SplashActivity.this).getAccessToken();
-
-                if (savedToken != null && !savedToken.isEmpty()){
-                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-                else {
-                    Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                startActivity(intent);
                 finish();
             }
         },2000);
-
     }
+    // Hủy Handler khi Activity bị hủy
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+    }
+
 }
