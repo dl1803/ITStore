@@ -165,7 +165,6 @@
 
                     <TextView
                         android:id="@+id/tvUserInfo"
-                        android:text="User name | 0987654321"
                         app:layout_constraintTop_toBottomOf="@id/titleAddress"
                         app:layout_constraintLeft_toLeftOf="parent"
                         android:layout_width="wrap_content"
@@ -174,7 +173,6 @@
 
                     <TextView
                         android:id="@+id/tvAddress"
-                        android:text="123 Đường Linh Kiện, Phường 10, Quận 1"
                         android:textColor="#666"
                         app:layout_constraintTop_toBottomOf="@id/tvUserInfo"
                         app:layout_constraintLeft_toLeftOf="parent"
