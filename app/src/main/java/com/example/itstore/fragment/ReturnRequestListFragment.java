@@ -70,4 +70,12 @@ public class ReturnRequestListFragment extends Fragment {
 
         viewModel.fetchReturnRequests();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (viewModel != null) {
+            viewModel.fetchReturnRequests();
+        }
+    }
 }
